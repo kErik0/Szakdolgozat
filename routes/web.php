@@ -1,0 +1,117 @@
+<?php
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\JobController;
+use App\Models\Job;
+use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard', function () {
+    $user = Auth::guard('web')->user();
+    $company = Auth::guard('company')->user();
+    $jobs = \App\Models\Job::all();
+
+    if ($user && $user->role === 'company') {
+        return view('dashboard-company', ['user' => $user, 'jobs' => $jobs]);
+    } elseif ($user) {
+        $appliedJobs = $user->applications()->pluck('job_id')->toArray();
+        return view('dashboard-user', ['user' => $user, 'jobs' => $jobs, 'appliedJobs' => $appliedJobs]);
+    } elseif ($company) {
+        return view('dashboard-company', ['user' => $company, 'jobs' => $jobs]);
+    } else {
+        return redirect()->route('login');
+    }
+})->middleware(['auth:web,company', 'verified'])->name('dashboard');
+
+// Admin route külön URL-lel
+Route::get('/admin', function () {
+    $user = Auth::user();
+
+    if (!$user || $user->role !== 'admin') {
+        return redirect()->route('dashboard')
+                         ->with('error', 'Nincs jogosultságod az admin oldalhoz.');
+    }
+
+    return view('dashboard-admin', ['user' => $user]);
+})->middleware(['auth'])->name('admin');
+
+
+// PROFIL szerkesztése
+Route::middleware(['auth:web,company'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/upload-picture', [ProfileController::class, 'uploadProfilePicture'])->name('profile.photo.update');
+    Route::delete('/profile/delete-picture', [ProfileController::class, 'deleteProfilePicture'])->name('profile.photo.destroy');
+    Route::post('/profile/upload-cv', [ProfileController::class, 'uploadCV'])->name('profile.cv.update');
+    Route::delete('/profile/delete-cv', [ProfileController::class, 'deleteCV'])->name('profile.cv.destroy');
+});
+
+Route::middleware(['auth:company'])->group(function() {
+    Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
+    Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+    Route::put('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
+    Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+    Route::get('/jobs/{job}/applications', [JobController::class, 'applications'])->name('jobs.applications');
+    Route::post('/applications/{application}/accept', [ApplicationController::class, 'accept'])->name('applications.accept');
+    Route::post('/applications/{application}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
+    Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+});
+
+// Felhasználók
+Route::middleware(['auth:web'])->group(function() {
+    Route::get('/all-jobs', function () {
+        $user = Auth::user();
+        $jobs = Job::all();
+        $appliedJobs = $user->applications()->pluck('job_id')->toArray();
+        return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
+    })->name('jobs.list');
+
+    Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
+    Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
+});
+
+
+Route::middleware(['auth:web,company'])->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+    Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+        if ($user = $request->user('web')) {
+            $user->sendEmailVerificationNotification();
+        } elseif ($company = $request->user('company')) {
+            $company->sendEmailVerificationNotification();
+        }
+        return back()->with('status', 'verification-link-sent');
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
+Route::prefix('company')->name('company.')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth:company')->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/dashboard'); 
+    })->middleware(['auth:company', 'signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user('company')->sendEmailVerificationNotification();
+        return back()->with('status', 'verification-link-sent');
+    })->middleware(['auth:company', 'throttle:6,1'])->name('verification.send');
+});
+
+require __DIR__.'/auth.php';
