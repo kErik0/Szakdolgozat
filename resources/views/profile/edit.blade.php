@@ -1,15 +1,16 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
-            Profil szerkesztése
-        </h2>
-    </x-slot>
-
-    <div class="py-12 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col gap-6 bg-gray-800 p-6 rounded-lg">
+   <main class="flex-1 flex flex-col items-center min-h-screen"
+          :style="darkMode 
+            ? 'background-color: #1f2937; color: rgb(230,231,235); transition: background-color 300ms, color 300ms;' 
+            : 'background-color: #ffffff; color: rgb(33,41,54); transition: background-color 300ms, color 300ms;'">
+        <div class="w-full max-w-7xl p-6 rounded-lg space-y-6"
+             :style="darkMode 
+                ? 'background-color: #3b4b63; color: rgb(230,231,235); border-color: #475569; transition: background-color 300ms, color 300ms, border-color 300ms;' 
+                : 'background-color: #f3f4f6; color: rgb(33,41,54); border-color: #e5e7eb; transition: background-color 300ms, color 300ms, border-color 300ms;'">
 
             <!-- Profilkép kezelő szekció -->
-            <div id="profile-photo" class="bg-gray-900 shadow-sm rounded-lg p-6 max-w-xl">
+            <div class="flex justify-center">
+                <div id="profile-photo" class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
                 <h2 class="text-lg font-semibold text-white mb-4">Profilkép kezelése</h2>
 
                 @if (session('error'))
@@ -56,10 +57,12 @@
                     </x-primary-button>
                 </form>
             </div>
+            </div>
 
             <!-- CV kezelő szekció -->
             @auth('web')
-            <div id="cv-section" class="bg-gray-900 shadow-sm rounded-lg p-6 max-w-xl">
+            <div class="flex justify-center">
+                <div id="cv-section" class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
                 <h2 class="text-lg font-semibold text-white mb-4">CV kezelése</h2>
 
                 @if (session('status') == 'cv-updated')
@@ -104,32 +107,40 @@
                     </x-primary-button>
                 </form>
             </div>
+            </div>
             @endauth
 
-            <div id="profile-info" class="bg-gray-900 shadow-sm rounded-lg p-6 max-w-xl">
-                @include('profile.partials.update-profile-information-form', ['user' => $user])
+            <div class="flex justify-center">
+                <div id="profile-info" class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
+                    @include('profile.partials.update-profile-information-form', ['user' => $user])
+                </div>
             </div>
 
-            <div id="password-section" class="bg-gray-900 shadow-sm rounded-lg p-6 max-w-xl">
-                @include('profile.partials.update-password-form', ['user' => $user, 'guard' => $user instanceof \App\Models\Company ? 'company' : 'web'])
+            <div class="flex justify-center">
+                <div id="password-section" class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
+                    @include('profile.partials.update-password-form', ['user' => $user, 'guard' => $user instanceof \App\Models\Company ? 'company' : 'web'])
+                </div>
             </div>
 
-            <div id="account-delete" class="bg-gray-900 shadow-sm rounded-lg p-6 max-w-xl">
-                <form method="POST" action="{{ route('profile.destroy') }}">
-                    @csrf
-                    @method('DELETE')
-                    <div class="mb-4">
-                        <label for="password" class="block font-semibold mb-2 text-white">Jelszó megerősítés</label>
-                        <input id="password" name="password" type="password" required autocomplete="current-password" class="w-full px-3 py-2 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-red-500">
-                        @error('password')
-                            <div class="text-red-500 mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <x-primary-button class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-md transition">
-                        Fiók törlése
-                    </x-primary-button>
-                </form>
+            <div class="flex justify-center">
+                <div id="account-delete" class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
+                    <form method="POST" action="{{ route('profile.destroy') }}">
+                        @csrf
+                        @method('DELETE')
+                        <div class="mb-4">
+                            <label for="password" class="block font-semibold mb-2 text-white">Jelszó megerősítés</label>
+                            <input id="password" name="password" type="password" required autocomplete="current-password"
+                                   class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">
+                            @error('password')
+                                <div class="text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <x-primary-button>
+                            Fiók törlése
+                        </x-primary-button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 </x-app-layout>

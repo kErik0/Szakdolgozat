@@ -66,7 +66,7 @@ class ProfileController extends Controller
         }
 
         $request->validate([
-            'profile_picture' => 'required|max:5120', // 5MB
+            'profile_picture' => 'required|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
         $file = $request->file('profile_picture');
