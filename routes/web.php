@@ -12,28 +12,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [JobController::class, 'browse'])->name('jobs.browse');
 
 Route::get('/dashboard', function () {
-    $user = Auth::guard('web')->user();
-    $company = Auth::guard('company')->user();
-    $jobs = \App\Models\Job::all();
-
-    // Cég guard prioritás
-    if ($company) {
-        return view('dashboard-company', ['user' => $company, 'jobs' => $jobs]);
-    } elseif ($user) {
-        if ($user->role === 'company') {
-            return view('dashboard-company', ['user' => $user, 'jobs' => $jobs]);
-        } else {
-            $appliedJobs = $user->applications()->pluck('job_id')->toArray();
-            return view('dashboard-user', ['user' => $user, 'jobs' => $jobs, 'appliedJobs' => $appliedJobs]);
-        }
-    } else {
-        return redirect('/'); // Ha nincs bejelentkezett user vagy cég, a / oldalra irányít
-    }
+    return redirect('/');
 })->middleware(['auth:web,company', 'verified'])->name('dashboard');
 
 // Admin route külön URL-lel
@@ -123,7 +105,7 @@ Route::prefix('company')->name('company.')->group(function () {
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
-        return redirect('/dashboard'); 
+        return redirect('/'); 
     })->middleware(['auth:company', 'signed'])->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {

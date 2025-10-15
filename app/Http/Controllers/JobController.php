@@ -119,4 +119,45 @@ class JobController extends Controller
         if ($application->job->company_id !== $company->id) abort(403);
         return view('applications.show', compact('application'));
     }
+
+    public function browse(Request $request)
+{
+    $query = Job::query()->with('company');
+    if ($request->filled('search')) {
+    $search = $request->search;
+    $query->where(function ($q) use ($search) {
+        $q->where('title', 'LIKE', "%{$search}%")
+          ->orWhere('description', 'LIKE', "%{$search}%")
+          ->orWhereHas('company', function ($sub) use ($search) {
+              $sub->where('name', 'LIKE', "%{$search}%");
+          });
+    });
+    }
+
+    if ($request->filled('location')) {
+        $query->where('location', 'LIKE', "%{$request->location}%");
+    }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('min_salary')) {
+        $query->where('salary', '>=', $request->min_salary);
+    }
+
+    if ($request->filled('max_salary')) {
+        $query->where('salary', '<=', $request->max_salary);
+    }
+
+    $jobs = $query->orderByDesc('created_at')->paginate(10);
+
+// Lekérjük a bejelentkezett felhasználó által már jelentkezett állások ID-it
+    $appliedJobs = [];
+    if (auth()->check()) {
+        $appliedJobs = auth()->user()->applications()->pluck('job_id')->toArray();
+    }
+
+    return view('jobs.browse', compact('jobs', 'appliedJobs'));
+    }
 }

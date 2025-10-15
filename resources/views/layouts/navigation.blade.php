@@ -9,14 +9,14 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="rounded-md transition hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <a href="{{ route('jobs.browse') }}" class="rounded-md transition hover:bg-gray-100 dark:hover:bg-gray-700">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-4 sm:-my-px sm:ms-10 sm:flex items-center">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <x-nav-link :href="route('jobs.browse')" :active="request()->routeIs('jobs.browse')" class="hover:bg-gray-100 dark:hover:bg-gray-700">
                         {{ __('Főoldal') }}
                     </x-nav-link>
                 </div>
