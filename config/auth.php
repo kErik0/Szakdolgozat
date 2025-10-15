@@ -43,6 +43,8 @@ return [
         'company' => [
             'driver' => 'session',
             'provider' => 'companies',
+            'session' => 'company_session',
+
         ],
     ],
 

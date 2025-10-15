@@ -16,7 +16,7 @@
 
                     Mielőtt folytatnád, kérjük, ellenőrizd az email fiókodat a megerősítő linkért.
                     Ha nem kaptad meg az emailt,
-                    <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
+                    <form class="d-inline" method="POST" action="{{ auth('company')->check() ? route('company.verification.send') : route('verification.send') }}">
                         @csrf
                         <button type="submit" class="btn btn-link p-0 m-0 align-baseline">kattints ide egy új linkért</button>.
                     </form>

@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
 
             if (!$loginSuccess) {
                 return back()->withErrors([
-                    'email' => 'Company login failed. Please check credentials.',
+                    'email' => 'Hibás e-mail cím vagy jelszó.',
                 ]);
             }
 
@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->route('dashboard');
             } else {
                 return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
+                    'email' => 'Hibás e-mail cím vagy jelszó.',
                 ]);
             }
         }
@@ -53,20 +53,27 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        $role = $request->input('role');
-
-        if ($role === 'company') {
+    // Először ellenőrizd, melyik guard van bejelentkezve
+        if (Auth::guard('company')->check()) {
             Auth::guard('company')->logout();
-        } else {
+        }
+
+        if (Auth::guard('web')->check()) {
             Auth::guard('web')->logout();
         }
 
+    // Session érvénytelenítés és token újragenerálás
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+    // Irány a login oldal, hogy ne töltse vissza automatikusan a régi sessiont
+        return redirect('/')->withHeaders([
+        'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+        'Pragma' => 'no-cache',
+        'Expires' => 'Fri, 01 Jan 1990 00:00:00 GMT'
+
+    ]);
     }
 }

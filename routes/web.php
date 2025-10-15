@@ -21,15 +21,18 @@ Route::get('/dashboard', function () {
     $company = Auth::guard('company')->user();
     $jobs = \App\Models\Job::all();
 
-    if ($user && $user->role === 'company') {
-        return view('dashboard-company', ['user' => $user, 'jobs' => $jobs]);
-    } elseif ($user) {
-        $appliedJobs = $user->applications()->pluck('job_id')->toArray();
-        return view('dashboard-user', ['user' => $user, 'jobs' => $jobs, 'appliedJobs' => $appliedJobs]);
-    } elseif ($company) {
+    // Cég guard prioritás
+    if ($company) {
         return view('dashboard-company', ['user' => $company, 'jobs' => $jobs]);
+    } elseif ($user) {
+        if ($user->role === 'company') {
+            return view('dashboard-company', ['user' => $user, 'jobs' => $jobs]);
+        } else {
+            $appliedJobs = $user->applications()->pluck('job_id')->toArray();
+            return view('dashboard-user', ['user' => $user, 'jobs' => $jobs, 'appliedJobs' => $appliedJobs]);
+        }
     } else {
-        return redirect()->route('login');
+        return redirect('/'); // Ha nincs bejelentkezett user vagy cég, a / oldalra irányít
     }
 })->middleware(['auth:web,company', 'verified'])->name('dashboard');
 
@@ -45,8 +48,6 @@ Route::get('/admin', function () {
     return view('dashboard-admin', ['user' => $user]);
 })->middleware(['auth'])->name('admin');
 
-
-// PROFIL szerkesztése
 Route::middleware(['auth:web,company'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -83,7 +84,6 @@ Route::middleware(['auth:web'])->group(function() {
     Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
 });
 
-
 Route::middleware(['auth:web,company'])->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
@@ -96,6 +96,24 @@ Route::middleware(['auth:web,company'])->group(function () {
         }
         return back()->with('status', 'verification-link-sent');
     })->middleware('throttle:6,1')->name('verification.send');
+
+    Route::post('/logout', function (Request $request) {
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+        }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    })->name('logout');
+
+    Route::post('/company/logout', function (Request $request) {
+        if (Auth::guard('company')->check()) {
+            Auth::guard('company')->logout();
+        }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    })->name('company.logout');
 });
 
 Route::prefix('company')->name('company.')->group(function () {

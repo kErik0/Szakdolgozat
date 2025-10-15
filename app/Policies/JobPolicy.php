@@ -27,7 +27,7 @@ class JobPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create($user): bool
     {
         return $user->role === 'company';
     }
@@ -35,17 +35,17 @@ class JobPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(Company $company, Job $job): bool
+    public function update($user, Job $job): bool
     {
-        return $company->id === $job->company_id;
+        return $user instanceof Company && $user->id === $job->company_id;
     } 
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(Company $company, Job $job): bool
+    public function delete($user, Job $job): bool
     {
-        return $company->id === $job->company_id;
+        return $user instanceof Company && $user->id === $job->company_id;
     }
 
     /**

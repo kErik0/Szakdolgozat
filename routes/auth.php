@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -54,24 +56,22 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
-});
+    // Logout route handling both 'web' and 'company' guards explicitly
+    Route::post('logout', function (Request $request) {
+        // Logout normal user guard 'web'
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+        }
 
-Route::middleware('auth:company')->group(function () {
-    Route::put('company/password', [PasswordController::class, 'update'])->name('company.password.update');
+        // Logout company user guard 'company'
+        if (Auth::guard('company')->check()) {
+            Auth::guard('company')->logout();
+        }
 
-    Route::get('company/verify-email', EmailVerificationPromptController::class)
-        ->name('company.verification.notice');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    Route::get('company/verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('company.verification.verify');
-
-    Route::post('company/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
-        ->name('company.verification.send');
-
-    Route::post('company/logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('company.logout');
+        // Redirect to homepage after logout
+        return redirect('/');
+    })->name('logout');
 });

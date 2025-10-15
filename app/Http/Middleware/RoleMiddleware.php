@@ -13,11 +13,13 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role)
     {
-        if (!Auth::check()) {
+        $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
+
+        if (!$user) {
             return redirect()->route('login');
         }
 
-        if (Auth::user()->role !== $role) {
+        if ($user->role !== $role) {
             return redirect()->route('dashboard')->with('error', 'Nincs jogosultságod az oldal megtekintéséhez.');
         }
 
