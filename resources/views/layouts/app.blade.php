@@ -57,5 +57,6 @@
                 }, true);
             })();
         </script>
+        @include('profile.partials.chatbot')
     </body>
 </html>

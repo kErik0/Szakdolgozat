@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
 
             Auth::guard('company')->login($company);
 
-            return redirect(route('dashboard', absolute: false));
+            return redirect(route('jobs.browse', absolute: false));
         } else {
             $user = User::create([
                 'name' => $request->name,
@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
 
             Auth::login($user);
 
-            return redirect(route('dashboard', absolute: false));
+            return redirect(route('jobs.browse', absolute: false));
         }
     }
 }

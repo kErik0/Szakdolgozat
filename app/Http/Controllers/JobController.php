@@ -122,6 +122,19 @@ class JobController extends Controller
 
     public function browse(Request $request)
 {
+    $user = Auth::guard('web')->user();
+    $company = Auth::guard('company')->user();
+
+    if ($user) {
+        if (! $user instanceof MustVerifyEmail || ! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+    } elseif ($company) {
+        if (! $company instanceof MustVerifyEmail || ! $company->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
+    }
+
     $query = Job::query()->with('company');
     if ($request->filled('search')) {
     $search = $request->search;

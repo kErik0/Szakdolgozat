@@ -92,6 +92,6 @@ class ApplicationController extends Controller
             $application->delete();
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'A jelentkezés sikeresen törölve lett.');
     }
 }

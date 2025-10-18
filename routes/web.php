@@ -14,10 +14,6 @@ use Illuminate\Http\Request;
 
 Route::get('/', [JobController::class, 'browse'])->name('jobs.browse');
 
-Route::get('/dashboard', function () {
-    return redirect('/');
-})->middleware(['auth:web,company', 'verified'])->name('dashboard');
-
 // Admin route külön URL-lel
 Route::get('/admin', function () {
     $user = Auth::user();
@@ -113,5 +109,7 @@ Route::prefix('company')->name('company.')->group(function () {
         return back()->with('status', 'verification-link-sent');
     })->middleware(['auth:company', 'throttle:6,1'])->name('verification.send');
 });
+
+Route::post('/chatbot', [ChatbotController::class, 'handle'])->name('chatbot.handle');
 
 require __DIR__.'/auth.php';

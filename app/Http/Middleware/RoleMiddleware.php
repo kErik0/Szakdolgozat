@@ -20,7 +20,7 @@ class RoleMiddleware
         }
 
         if ($user->role !== $role) {
-            return redirect()->route('dashboard')->with('error', 'Nincs jogosultságod az oldal megtekintéséhez.');
+            return redirect()->route('jobs.browse')->with('error', 'Nincs jogosultságod az oldal megtekintéséhez.');
         }
 
         return $next($request);
