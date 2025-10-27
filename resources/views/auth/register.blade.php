@@ -1,87 +1,59 @@
 <x-app-layout>
-<main class="flex-1 flex justify-center min-h-screen"
-          :style="darkMode 
-            ? 'background-color: #1f2937; color: rgb(230,231,235); transition: background-color 300ms, color 300ms;' 
-            : 'background-color: #ffffff; color: rgb(33,41,54); transition: background-color 300ms, color 300ms;'">
-        <div class="w-full max-w-7xl p-6 rounded-lg"
-             :style="darkMode 
-                ? 'background-color: #3b4b63; color: rgb(230,231,235); border-color: #475569; transition: background-color 300ms, color 300ms, border-color 300ms;' 
-                : 'background-color: #f3f4f6; color: rgb(33,41,54); border-color: #e5e7eb; transition: background-color 300ms, color 300ms, border-color 300ms;'">
-            
-    <div class="flex justify-center">
-    <div class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 w-full max-w-xl">
-
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="'Név'" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" />
         </div>
 
         <!-- Email Address -->
-        <div class="mt-4">
+        <div>
             <x-input-label for="email" :value="'Email cím'" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+        <div>
             <x-input-label for="password" :value="'Jelszó'" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-text-input id="password" type="password" name="password" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
         <!-- Confirm Password -->
-        <div class="mt-4">
+        <div>
             <x-input-label for="password_confirmation" :value="'Jelszó megerősítése'" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" />
         </div>
 
-        <div class="mt-4">
-    <x-input-label :value="__('Regisztráció típusa')" />
+        <div>
+            <x-input-label :value="__('Regisztráció típusa')" />
 
-    <div class="flex items-center justify-center mt-2 space-x-8">
-        <label class="inline-flex items-center">
-            <input type="radio" name="role" value="user" {{ old('role', 'user') == 'user' ? 'checked' : '' }} class="form-radio mr-2">
-            <span class="text-white">Felhasználó</span>
-        </label>
+            <label>
+                <input type="radio" name="role" value="user" {{ old('role', 'user') == 'user' ? 'checked' : '' }}>
+                Felhasználó
+            </label>
 
-        <label class="inline-flex items-center">
-            <input type="radio" name="role" value="company" {{ old('role') == 'company' ? 'checked' : '' }} class="form-radio mr-2">
-            <span class="text-white">Cég</span>
-        </label>
-    </div>
+            <label>
+                <input type="radio" name="role" value="company" {{ old('role') == 'company' ? 'checked' : '' }}>
+                Cég
+            </label>
 
-    <x-input-error :messages="$errors->get('role')" class="mt-2" />
-</div>
+            <x-input-error :messages="$errors->get('role')" />
+        </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
+        <div>
+            <a href="{{ route('login') }}">
                 Már regisztráltál?
             </a>
 
-            <x-primary-button class="ms-4">
+            <x-primary-button>
                 Regisztráció
             </x-primary-button>
         </div>
     </form>
-    </div>
-    </div>
-    </div>
-    </main>
 </x-app-layout>
-

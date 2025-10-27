@@ -26,8 +26,23 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
-        $originalData = $user->getOriginal();
-        $user->fill($request->validated());
+
+        if ($user instanceof \App\Models\Company) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'address' => 'required|string|max:255',
+                'tax_number' => 'required|string|max:50',
+                'phone' => 'required|string|max:50',
+            ]);
+            $user->fill($request->only(['name','email','address','tax_number','phone']));
+        } else {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+            ]);
+            $user->fill($request->only(['name','email']));
+        }
 
         $passwordChanged = false;
         $profileChanged = $user->isDirty();

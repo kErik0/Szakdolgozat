@@ -84,6 +84,10 @@ class JobController extends Controller
     // Felhasználók: jelentkezés egy hirdetésre
     public function apply(Job $job)
     {
+        if (!Auth::guard('web')->check()) {
+            return redirect()->route('login')->with('error', 'Jelentkezéshez be kell jelentkezned!');
+        }
+
         $user = Auth::guard('web')->user();
         // Ellenőrizzük, hogy van-e már jelentkezés ehhez az álláshoz
         $existing = $job->applications()->where('user_id', $user->id)->first();
@@ -113,64 +117,78 @@ class JobController extends Controller
         return view('jobs.applications', compact('job', 'applications'));
     }
 
-    public function show(Application $application)
+    public function showApplication(Application $application)
     {
         $company = Auth::guard('company')->user();
         if ($application->job->company_id !== $company->id) abort(403);
         return view('applications.show', compact('application'));
     }
+    
+    public function show(Job $job)
+    {
+        $alreadyApplied = false;
+
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+            $alreadyApplied = $job->applications()->where('user_id', $user->id)->exists();
+        }
+
+        return view('jobs.show', compact('job', 'alreadyApplied'));
+    }
 
     public function browse(Request $request)
-{
-    $user = Auth::guard('web')->user();
-    $company = Auth::guard('company')->user();
+    {
+        $user = Auth::guard('web')->user();
+        $company = Auth::guard('company')->user();
 
-    if ($user) {
-        if (! $user instanceof MustVerifyEmail || ! $user->hasVerifiedEmail()) {
-            return redirect()->route('verification.notice');
+        if ($user) {
+            if (! $user instanceof MustVerifyEmail || ! $user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+        } elseif ($company) {
+            if (! $company instanceof MustVerifyEmail || ! $company->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
         }
-    } elseif ($company) {
-        if (! $company instanceof MustVerifyEmail || ! $company->hasVerifiedEmail()) {
-            return redirect()->route('verification.notice');
+
+        $query = Job::query()->with('company');
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%")
+                ->orWhere('location', 'LIKE', "%{$search}%")
+                ->orWhereHas('company', function ($sub) use ($search) {
+                $sub->where('name', 'LIKE', "%{$search}%");
+                });
+            });
         }
-    }
 
-    $query = Job::query()->with('company');
-    if ($request->filled('search')) {
-    $search = $request->search;
-    $query->where(function ($q) use ($search) {
-        $q->where('title', 'LIKE', "%{$search}%")
-          ->orWhere('description', 'LIKE', "%{$search}%")
-          ->orWhereHas('company', function ($sub) use ($search) {
-              $sub->where('name', 'LIKE', "%{$search}%");
-          });
-    });
-    }
+        if ($request->filled('location')) {
+            $location = $request->location;
+            $query->where('location', 'LIKE', "%{$location}%");
+        }
 
-    if ($request->filled('location')) {
-        $query->where('location', 'LIKE', "%{$request->location}%");
-    }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
 
-    if ($request->filled('type')) {
-        $query->where('type', $request->type);
-    }
+        if ($request->filled('min_salary')) {
+            $query->where('salary', '>=', $request->min_salary);
+        }
 
-    if ($request->filled('min_salary')) {
-        $query->where('salary', '>=', $request->min_salary);
-    }
+        if ($request->filled('max_salary')) {
+            $query->where('salary', '<=', $request->max_salary);
+        }
 
-    if ($request->filled('max_salary')) {
-        $query->where('salary', '<=', $request->max_salary);
-    }
-
-    $jobs = $query->orderByDesc('created_at')->paginate(10);
+        $jobs = $query->orderByDesc('created_at')->paginate(24);
 
 // Lekérjük a bejelentkezett felhasználó által már jelentkezett állások ID-it
-    $appliedJobs = [];
-    if (auth()->check()) {
-        $appliedJobs = auth()->user()->applications()->pluck('job_id')->toArray();
-    }
+        $appliedJobs = [];
+        if (auth()->check()) {
+            $appliedJobs = auth()->user()->applications()->pluck('job_id')->toArray();
+        }
 
-    return view('jobs.browse', compact('jobs', 'appliedJobs'));
+        return view('jobs.browse', compact('jobs', 'appliedJobs'));
     }
 }

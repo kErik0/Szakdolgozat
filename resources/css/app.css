@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './cards.css';
+@import './navbar.css';
+
+.btn,
+.x-primary-button,
+button[type="submit"],
+a.btn {
+    @apply inline-block px-4 py-2 rounded-md font-medium transition-all duration-300;
+    @apply bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900;
+    @apply hover:bg-gray-700 dark:hover:bg-gray-300;
+    @apply shadow-sm hover:shadow-md;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    @apply border border-gray-300 dark:border-gray-600 rounded-md p-2;
+    @apply dark:bg-[#1f1f1f] dark:text-gray-100;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-500;
+}
+
+/* Globális kártyák / dobozok */
+.card {
+    @apply bg-white dark:bg-[#2b2b2b] rounded-lg shadow-sm p-6;
+}
+
+/* Lapozó gombok új stílusa */
+nav[role="navigation"] .relative.inline-flex.items-center {
+    @apply bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600;
+}
+
+/* Aktív (aktuális oldal) */
+nav[role="navigation"] span[aria-current="page"],
+nav[role="navigation"] a[aria-current="page"] {
+    background-color: #e5e7eb !important; /* világos mód: világos szürke */
+    color: #111827 !important; /* sötét szöveg */
+}
+
+@media (prefers-color-scheme: dark) {
+    nav[role="navigation"] span[aria-current="page"],
+    nav[role="navigation"] a[aria-current="page"] {
+        background-color: #4b5563 !important; /* sötét mód: világosabb szürke */
+        color: #f3f4f6 !important; /* világos szöveg */
+    }
+}
+
+/* Lapozó szegélyei és elrendezése */
+nav[role="navigation"] {
+    @apply flex justify-center mt-8;
+}
+
+@layer components {
+  /* Pagination alap gomb */
+  nav[role="navigation"] .relative.inline-flex.items-center {
+      @apply bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600;
+  }
+
+  /* Aktív (aktuális oldal) */
+  nav[role="navigation"] .bg-gray-800.text-white {
+      @apply bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-gray-100;
+  }
+}

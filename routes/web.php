@@ -10,6 +10,12 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\DashboardCompanyController;
+use App\Http\Controllers\CompanyController;
+
+
 
 
 Route::get('/', [JobController::class, 'browse'])->name('jobs.browse');
@@ -34,6 +40,7 @@ Route::middleware(['auth:web,company'])->group(function () {
     Route::delete('/profile/delete-picture', [ProfileController::class, 'deleteProfilePicture'])->name('profile.photo.destroy');
     Route::post('/profile/upload-cv', [ProfileController::class, 'uploadCV'])->name('profile.cv.update');
     Route::delete('/profile/delete-cv', [ProfileController::class, 'deleteCV'])->name('profile.cv.destroy');
+    Route::get('/recommendations', [RecommendationController::class, 'recommend'])->name('recommendations');
 });
 
 Route::middleware(['auth:company'])->group(function() {
@@ -49,16 +56,19 @@ Route::middleware(['auth:company'])->group(function() {
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
 });
 
-// Felhasználók
-Route::middleware(['auth:web'])->group(function() {
-    Route::get('/all-jobs', function () {
-        $user = Auth::user();
-        $jobs = Job::all();
-        $appliedJobs = $user->applications()->pluck('job_id')->toArray();
-        return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
-    })->name('jobs.list');
+// Felhasználók (álláskeresők)
+Route::get('/all-jobs', function () {
+    $user = Auth::user();
+    $jobs = Job::all();
+    $appliedJobs = $user ? $user->applications()->pluck('job_id')->toArray() : [];
+    return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
+})->middleware(['auth:web'])->name('jobs.list');
 
-    Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
+// Jelentkezés egy állásra (vendégek is láthatják, de csak bejelentkezve tudnak jelentkezni)
+Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
+
+// Saját jelentkezések megtekintése (csak bejelentkezett felhasználóknak)
+Route::middleware(['auth:web'])->group(function() {
     Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
 });
 
@@ -111,5 +121,8 @@ Route::prefix('company')->name('company.')->group(function () {
 });
 
 Route::post('/chatbot', [ChatbotController::class, 'handle'])->name('chatbot.handle');
+Route::get('/dashboard-company', [DashboardCompanyController::class, 'index'])->name('dashboard-company');
+Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+Route::get('/companies/{company}', [DashboardCompanyController::class, 'show'])->name('companies');
 
 require __DIR__.'/auth.php';

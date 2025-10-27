@@ -1,19 +1,47 @@
 <x-app-layout>
-    <main class="flex-1 flex justify-center min-h-screen"
-          :style="darkMode 
-            ? 'background-color: #1f2937; color: rgb(230,231,235); transition: background-color 300ms, color 300ms;' 
-            : 'background-color: #ffffff; color: rgb(33,41,54); transition: background-color 300ms, color 300ms;'">
-        <div class="w-full max-w-7xl p-6 rounded-lg"
-             :style="darkMode 
-                ? 'background-color: #3b4b63; color: rgb(230,231,235); border-color: #475569; transition: background-color 300ms, color 300ms, border-color 300ms;' 
-                : 'background-color: #f3f4f6; color: rgb(33,41,54); border-color: #e5e7eb; transition: background-color 300ms, color 300ms, border-color 300ms;'">
-            
-            <!-- Felhasználói adatok blokk -->
-            <div class="bg-white dark:bg-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Üdvözlünk, {{ Auth::user()->name }}</h2>
-                <p class="text-gray-700 dark:text-gray-200"><strong>Szerepkör:</strong> {{ Auth::user()->role }}</p>
-            </div>
+    <!-- Cégek -->
+    @if(isset($companies) && count($companies) > 0)
+        <div class="job-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            @foreach($companies as $company)
+                @php
+                    $profileImage = $company->logo;
+                @endphp
 
+                <div class="job-card bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 transition-transform transform hover:scale-105 hover:shadow-lg duration-300">
+                    {{-- Cég logó --}}
+                    @if($profileImage && file_exists(public_path($profileImage)))
+                        <div class="flex justify-center mb-4">
+                            <img src="{{ asset($profileImage) }}" alt="{{ $company->name }}" class="w-20 h-20 object-cover rounded-full">
+                        </div>
+                    @else
+                        <div class="w-20 h-20 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-4 text-gray-500 dark:text-gray-300">
+                            N/A
+                        </div>
+                    @endif
+
+                    {{-- Cég név --}}
+                    <h3 class="text-lg font-semibold text-center mb-2 text-gray-900 dark:text-gray-100">{{ $company->name }}</h3>
+
+                    {{-- Cég adatok --}}
+                    <p class="text-center text-gray-600 dark:text-gray-300">📍 {{ $company->address ?? 'Nincs megadva' }}</p>
+                    <p class="text-center text-gray-600 dark:text-gray-300">💼 {{ $company->tax_number ?? 'Nincs megadva' }}</p>
+                    <p class="text-center text-gray-600 dark:text-gray-300">📞 {{ $company->phone ?? 'Nincs megadva' }}</p>
+
+                    {{-- Részletek gomb --}}
+                    <div class="text-center mt-4">
+                        <a href="{{ route('companies', $company->id) }}" class="btn">
+                            Részletek
+                        </a>
+                    </div>
+                </div>
+            @endforeach
         </div>
-    </main>
+
+        {{-- Lapozás --}}
+        <div class="mt-8 mb-16">
+            <x-pagination :paginator="$companies" />  
+        </div>  
+    @else
+        Jelenleg nincs elérhető cég.
+    @endif
 </x-app-layout>

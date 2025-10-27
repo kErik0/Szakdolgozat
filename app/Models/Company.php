@@ -19,6 +19,9 @@ class Company extends Authenticatable implements MustVerifyEmail
         'role',
         'logo',
         'email_verified_at',
+        'address',
+        'tax_number',
+        'phone',
     ];
 
     protected $hidden = [
