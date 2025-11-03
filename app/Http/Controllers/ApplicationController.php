@@ -16,7 +16,11 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-        $applications = Application::with(['job', 'user'])->get();
+        $user = Auth::guard('web')->user();
+
+        $applications = Application::with(['job', 'user'])
+            ->where('user_id', $user->id)
+            ->get();
 
         return view('applications.index', compact('applications'));
     }
@@ -82,16 +86,44 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Delete the application with the given ID.
+     * Delete an application by the logged-in user.
      */
-    public function destroy($id)
+    public function destroyUser($id)
     {
-        $application = Application::find($id);
+        try {
+            $application = Application::findOrFail($id);
+            $user = Auth::guard('web')->user();
 
-        if ($application) {
+            if ($application->user_id !== $user->id) {
+                return redirect('/my-applications')->with('error', 'Nincs jogosultságod ennek a jelentkezésnek a törléséhez.');
+            }
+
             $application->delete();
-        }
 
-        return redirect()->route('applications.index')->with('success', 'A jelentkezés sikeresen törölve lett.');
+            return redirect('/my-applications')->with('success', 'A jelentkezés sikeresen törölve lett.');
+        } catch (\Exception $e) {
+            return redirect('/my-applications')->with('error', 'Hiba történt a törlés közben. Kérjük, próbáld újra.');
+        }
+    }
+
+    /**
+     * Delete an application by the company.
+     */
+    public function destroyCompany($id)
+    {
+        try {
+            $application = Application::findOrFail($id);
+            $company = Auth::guard('company')->user();
+
+            if (!$application->job || $application->job->company_id !== $company->id) {
+                return redirect()->back()->with('error', 'Nincs jogosultságod ennek a jelentkezésnek a törléséhez.');
+            }
+
+            $application->delete();
+
+            return redirect()->back()->with('success', 'A jelentkezés sikeresen törölve lett.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Hiba történt a törlés közben. Kérjük, próbáld újra.');
+        }
     }
 }

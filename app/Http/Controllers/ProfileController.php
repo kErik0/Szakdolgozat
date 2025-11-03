@@ -62,22 +62,18 @@ class ProfileController extends Controller
             return Redirect::route('profile.edit')->with('status', 'password-updated');
         } elseif ($profileChanged) {
             $user->save();
-            return Redirect::route('profile.edit')->with('status', 'profile-updated');
+            return Redirect::route('profile.edit')->with('success', 'Profil sikeresen frissítve.');
         } else {
             // Nincs változás, ne írjuk felül a státuszt
-            return Redirect::route('profile.edit');
+            return Redirect::route('profile.edit')->with('error', 'Nem történt módosítás a profilban.');
         }
     }
 
-    /**
-     * Upload the user's profile picture (javított verzió).
-     */
     public function uploadProfilePicture(Request $request)
     {
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
-
         if (!$request->hasFile('profile_picture')) {
-            return redirect()->back()->with('error', 'Nincs fájl feltöltve.');
+            return redirect()->back()->with('error', 'Nem sikerült feltölteni a profilképet. Nincs fájl kiválasztva.');
         }
 
         $request->validate([
@@ -86,22 +82,33 @@ class ProfileController extends Controller
 
         $file = $request->file('profile_picture');
         $imageName = time().'_'.$user->id.'.'.$file->getClientOriginalExtension();
+
+        // régi kép törlése, ha létezik
+        $oldPath = $user instanceof \App\Models\Company ? $user->logo : $user->profile_picture;
+        if ($oldPath && file_exists(storage_path('app/public/' . str_replace('storage/', '', $oldPath)))) {
+            unlink(storage_path('app/public/' . str_replace('storage/', '', $oldPath)));
+        }
+
+        // új kép mentése
         $file->storeAs('profile_pictures', $imageName, 'public');
         $relativePath = 'storage/profile_pictures/' . $imageName;
 
+        // adatbázis frissítés
         if ($user instanceof \App\Models\Company) {
             $user->logo = $relativePath;
         } else {
             $user->profile_picture = $relativePath;
         }
+
         $user->save();
 
-        return redirect()->back()->with('status', 'profile-picture-updated');
+        // cache elkerülése: redirect friss cache-busterrel
+        return redirect()->back()->with('success', 'Profilkép sikeresen feltöltve!')->with('timestamp', time());
     }
 
-/**
- * Delete the user's profile picture (javított verzió).
- */
+    /**
+     * Delete the user's profile picture (javított verzió).
+     */
     public function deleteProfilePicture(Request $request)
     {
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
@@ -109,7 +116,7 @@ class ProfileController extends Controller
         $path = $user instanceof \App\Models\Company ? $user->logo : $user->profile_picture;
 
         if ($path) {
-            $filePath = public_path($path);
+            $filePath = storage_path('app/public/' . str_replace('storage/', '', $path));
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
@@ -120,7 +127,7 @@ class ProfileController extends Controller
             }
             $user->save();
 
-            return redirect()->back()->with('status', 'profile-picture-deleted');
+            return redirect()->back()->with('success', 'Profilkép sikeresen törölve!');
         }
 
         return redirect()->back()->with('error', 'Nincs profilkép a törléshez.');
@@ -137,17 +144,38 @@ class ProfileController extends Controller
 
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
 
-        // Email értesítés küldése a fiók törléséről
-        $user->notify(new \App\Notifications\AccountDeleteNotification());
+        try {
+            // Jelentkezések törlése
+            if (method_exists($user, 'applications')) {
+                $user->applications()->delete();
+            }
 
-        Auth::logout();
+            // CV törlése, ha van
+            if ($user->resume && file_exists(public_path('storage/cvs/' . $user->resume))) {
+                unlink(public_path('storage/cvs/' . $user->resume));
+            }
 
-        $user->delete();
+            // Profilkép / logó törlése, ha van
+            $profilePicPath = $user instanceof \App\Models\Company ? $user->logo : $user->profile_picture;
+            if ($profilePicPath && file_exists(storage_path('app/public/' . str_replace('storage/', '', $profilePicPath)))) {
+                unlink(storage_path('app/public/' . str_replace('storage/', '', $profilePicPath)));
+            }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            // Email értesítés a törlésről
+            $user->notify(new \App\Notifications\AccountDeleteNotification());
 
-        return Redirect::to('/')->with('status', 'account-deleted');
+            Auth::logout();
+
+            // Fiók törlése
+            $user->delete();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return Redirect::to('/')->with('success', 'A fiók törölve lett.');
+        } catch (\Throwable $e) {
+            return Redirect::back()->with('error', 'Hiba történt a fiók vagy az adatok törlése során.');
+        }
     }
 
     /**
@@ -158,7 +186,7 @@ class ProfileController extends Controller
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
 
         if (!$request->hasFile('cv')) {
-            return redirect()->back()->with('error', 'Nincs fájl feltöltve.');
+            return redirect()->back()->with('error', 'Nem sikerült feltölteni az önéletrajzot. Nincs fájl kiválasztva.');
         }
 
         $request->validate([
@@ -171,7 +199,7 @@ class ProfileController extends Controller
         $user->resume = $cvName;
         $user->save();
 
-        return redirect()->back()->with('status', 'cv-updated');
+        return redirect()->back()->with('success', 'Önéletrajz sikeresen feltöltve!');
     }
 
     /**
@@ -191,7 +219,7 @@ class ProfileController extends Controller
             $user->resume = null;
             $user->save();
 
-            return redirect()->back()->with('status', 'cv-deleted');
+            return redirect()->back()->with('success', 'Önéletrajz sikeresen törölve!');
         }
 
         return redirect()->back()->with('error', 'Nincs feltöltött önéletrajz a törléshez.');

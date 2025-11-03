@@ -1,25 +1,58 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Elfelejtetted a jelszavad? Semmi gond. Add meg az email címed, és küldünk egy linket, amivel új jelszót választhatsz.') }}
+<x-app-layout>
+    <!-- Értesítések -->
+    @if (session('success'))
+        <div 
+            x-data="{ show: true }" 
+            x-show="show" 
+            x-transition 
+            x-init="setTimeout(() => show = false, 3000)" 
+            class="max-w-4xl mx-auto mt-6 bg-green-100 border border-green-400 text-green-800 px-6 py-3 rounded-lg text-center shadow"
+        >
+            ✅ {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div 
+            x-data="{ show: true }" 
+            x-show="show" 
+            x-transition 
+            x-init="setTimeout(() => show = false, 3000)" 
+            class="max-w-4xl mx-auto mt-6 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg text-center shadow"
+        >
+            ⚠️ {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Elfelejtett jelszó form -->
+    <div class="flex justify-center items-center min-h-[80vh]">
+        <form method="POST" action="{{ route('password.email') }}" class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md space-y-6">
+            @csrf
+
+            <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6 tracking-wide">Elfelejtett jelszó</h2>
+
+            <p class="text-sm text-gray-700 dark:text-gray-300 text-center mb-4">
+                Add meg az email címed, és küldünk egy linket, amivel új jelszót választhatsz.
+            </p>
+
+            <!-- Email cím -->
+            <div>
+                <label for="email" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Email cím</label>
+                <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            <!-- Küldés gomb -->
+            <div class="flex flex-col items-center space-y-3 mt-4">
+                <button type="submit" class="bg-[#1f1f1f] dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-gray-700 text-white px-3 py-1 rounded-lg w-28 shadow transition">
+                    Küldés
+                </button>
+
+                <a href="{{ route('login') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
+                    Bejelentkezés
+                </a>
+            </div>
+        </form>
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email cím')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Jelszó visszaállító link küldése') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</x-app-layout>

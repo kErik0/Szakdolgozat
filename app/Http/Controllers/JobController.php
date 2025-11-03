@@ -89,24 +89,37 @@ class JobController extends Controller
         }
 
         $user = Auth::guard('web')->user();
+        // Ellenőrizzük, hogy a felhasználó emailje meg van-e erősítve
+        if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail()) {
+            return redirect()->back()->with('error', 'Csak megerősített email címmel jelentkezhetsz állásra. Kérjük, erősítsd meg az email címedet a profilodon.');
+        }
         // Ellenőrizzük, hogy van-e már jelentkezés ehhez az álláshoz
         $existing = $job->applications()->where('user_id', $user->id)->first();
+
         if ($existing) {
             if ($existing->status === 'archived') {
                 return redirect()->back()->with('error', 'Már jelentkeztél erre az állásra, a korábbi jelentkezés archiválva lett.');
             }
             return redirect()->back()->with('error', 'Már jelentkeztél erre az állásra!');
         }
-        // Ha nincs korábbi jelentkezés, létrehozzuk
-        $application = $job->applications()->create([
-            'user_id' => $user->id,
-            'status' => 'pending'
-        ]);
-        $company = $job->company;
-        $company->notify(new NewApplicationNotification($application));
-        // Értesítés a felhasználónak a sikeres jelentkezésről
-        $user->notify(new ApplicationSubmitNotification($application));
-        return redirect()->back()->with('success', 'Sikeres jelentkezés!');
+
+        try {
+            // Ha nincs korábbi jelentkezés, létrehozzuk
+            $application = $job->applications()->create([
+                'user_id' => $user->id,
+                'status' => 'pending'
+            ]);
+
+            $company = $job->company;
+            $company->notify(new NewApplicationNotification($application));
+
+            // Értesítés a felhasználónak a sikeres jelentkezésről
+            $user->notify(new ApplicationSubmitNotification($application));
+
+            return redirect()->back()->with('success', 'Sikeres jelentkezés!');
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'Hiba történt a jelentkezés során, próbáld újra.');
+        }
     }
 
     public function applications(Job $job)
@@ -141,15 +154,6 @@ class JobController extends Controller
         $user = Auth::guard('web')->user();
         $company = Auth::guard('company')->user();
 
-        if ($user) {
-            if (! $user instanceof MustVerifyEmail || ! $user->hasVerifiedEmail()) {
-                return redirect()->route('verification.notice');
-            }
-        } elseif ($company) {
-            if (! $company instanceof MustVerifyEmail || ! $company->hasVerifiedEmail()) {
-                return redirect()->route('verification.notice');
-            }
-        }
 
         $query = Job::query()->with('company');
         if ($request->filled('search')) {

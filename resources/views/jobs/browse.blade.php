@@ -2,20 +2,36 @@
             
             <!-- Munkamenet üzenetek -->
             @if (session('success'))
-                {{ session('success') }}
+                <div 
+                    x-data="{ show: true }" 
+                    x-show="show" 
+                    x-transition 
+                    x-init="setTimeout(() => show = false, 3000)" 
+                    class="max-w-4xl mx-auto mt-6 bg-green-100 border border-green-400 text-green-800 px-6 py-3 rounded-lg text-center shadow"
+                >
+                    ✅ {{ session('success') }}
+                </div>
             @endif
+
             @if (session('error'))
-                {{ session('error') }}
+                <div 
+                    x-data="{ show: true }" 
+                    x-show="show" 
+                    x-transition 
+                    x-init="setTimeout(() => show = false, 3000)" 
+                    class="max-w-4xl mx-auto mt-6 bg-red-100 border border-red-400 text-red-800 px-6 py-3 rounded-lg text-center shadow"
+                >
+                    ⚠️ {{ session('error') }}
+                </div>
             @endif
 
 <!-- Szűrődoboz: csak akkor látható, ha a navbarból megnyitod -->
 <div id="filters-box"
-     style="display:@if(request()->filled('location') || request()->filled('type') || request()->filled('min_salary') || request()->filled('max_salary')) block @else none @endif;"
-     class="bg-white dark:bg-[#2b2b2b] p-6 rounded-lg shadow-sm mb-8">
+     style="display:@if(request()->filled('location') || request()->filled('type') || request()->filled('min_salary') || request()->filled('max_salary')) block @else none @endif;">
 
     <form method="GET" action="{{ route('jobs.browse') }}">
         <div class="flex flex-wrap gap-3 items-center justify-center mb-4">
-            <input type="text" name="location" value="{{ request('location') }}" placeholder="Helyszín" class="input w-44" />
+            <input type="text" name="location" value="{{ request('location') }}" placeholder="Helyszín" class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400" />
 
             <select name="type" class="input w-44">
                 <option value="">Típus</option>

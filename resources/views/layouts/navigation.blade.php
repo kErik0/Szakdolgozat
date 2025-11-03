@@ -14,7 +14,13 @@
     @if (request()->routeIs('jobs.browse') || request()->routeIs('dashboard-company'))
         <div class="nav-center">
             <form method="GET" action="{{ request()->is('dashboard-company*') || request()->is('companies*') ? route('dashboard-company') : route('jobs.browse') }}">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Keresés...">
+                <input 
+                    type="text" 
+                    name="search" 
+                    value="{{ request('search') }}" 
+                    placeholder="Keresés..." 
+                    class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#3c3e43] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition"
+                >
             </form>
             <button type="button" id="toggle-filters" class="btn">Szűrők</button>
         </div>

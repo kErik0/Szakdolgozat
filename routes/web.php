@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\JobController;
 use App\Models\Job;
 use App\Http\Controllers\CompanyProfileController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -14,6 +13,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\DashboardCompanyController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Auth\PasswordController;
 
 
 
@@ -41,41 +41,7 @@ Route::middleware(['auth:web,company'])->group(function () {
     Route::post('/profile/upload-cv', [ProfileController::class, 'uploadCV'])->name('profile.cv.update');
     Route::delete('/profile/delete-cv', [ProfileController::class, 'deleteCV'])->name('profile.cv.destroy');
     Route::get('/recommendations', [RecommendationController::class, 'recommend'])->name('recommendations');
-});
-
-Route::middleware(['auth:company'])->group(function() {
-    Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
-    Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
-    Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
-    Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
-    Route::put('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
-    Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
-    Route::get('/jobs/{job}/applications', [JobController::class, 'applications'])->name('jobs.applications');
-    Route::post('/applications/{application}/accept', [ApplicationController::class, 'accept'])->name('applications.accept');
-    Route::post('/applications/{application}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
-    Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
-});
-
-// Felhasználók (álláskeresők)
-Route::get('/all-jobs', function () {
-    $user = Auth::user();
-    $jobs = Job::all();
-    $appliedJobs = $user ? $user->applications()->pluck('job_id')->toArray() : [];
-    return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
-})->middleware(['auth:web'])->name('jobs.list');
-
-// Jelentkezés egy állásra (vendégek is láthatják, de csak bejelentkezve tudnak jelentkezni)
-Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
-
-// Saját jelentkezések megtekintése (csak bejelentkezett felhasználóknak)
-Route::middleware(['auth:web'])->group(function() {
-    Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
-});
-
-Route::middleware(['auth:web,company'])->group(function () {
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->name('verification.notice');
+    Route::patch('/password', [PasswordController::class, 'update'])->middleware(['auth:web,company'])->name('password.update');
     Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
         if ($user = $request->user('web')) {
             $user->sendEmailVerificationNotification();
@@ -104,11 +70,45 @@ Route::middleware(['auth:web,company'])->group(function () {
     })->name('company.logout');
 });
 
-Route::prefix('company')->name('company.')->group(function () {
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->middleware('auth:company')->name('verification.notice');
+Route::middleware(['auth:company'])->group(function() {
+    Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
+    Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+    Route::put('/jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
+    Route::delete('/jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+    Route::get('/jobs/{job}/applications', [JobController::class, 'applications'])->name('jobs.applications');
+    Route::post('/applications/{application}/accept', [ApplicationController::class, 'accept'])->name('applications.accept');
+    Route::post('/applications/{application}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
+    // Cégek törölhetik a jelentkezéseket
+    Route::delete('/company/applications/{id}', [ApplicationController::class, 'destroyCompany'])
+        ->middleware(['auth:company'])
+        ->name('applications.destroyCompany');
+    Route::patch('/company/update-description', [CompanyController::class, 'updateDescription'])->name('company.updateDescription');
+});
 
+// Felhasználók (álláskeresők)
+Route::get('/all-jobs', function () {
+    $user = Auth::user();
+    $jobs = Job::all();
+    $appliedJobs = $user ? $user->applications()->pluck('job_id')->toArray() : [];
+    return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
+})->middleware(['auth:web'])->name('jobs.list');
+
+// Jelentkezés egy állásra (vendégek is láthatják, de csak bejelentkezve tudnak jelentkezni)
+Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
+
+// Saját jelentkezések megtekintése (csak bejelentkezett felhasználóknak)
+Route::middleware(['auth:web'])->group(function() {
+    Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::delete('/my-applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+    // Felhasználók törölhetik a saját jelentkezéseiket
+    Route::delete('/my-applications/{id}', [ApplicationController::class, 'destroyUser'])
+        ->middleware(['auth:web'])
+        ->name('applications.destroyUser');
+});
+
+Route::prefix('company')->name('company.')->group(function () {
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         return redirect('/'); 

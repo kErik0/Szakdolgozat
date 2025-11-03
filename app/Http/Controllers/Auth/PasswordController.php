@@ -20,10 +20,13 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        return back()->with('status', 'password-updated');
+        try {
+            $request->user()->update([
+                'password' => Hash::make($validated['password']),
+            ]);
+            return back()->with('success', 'Jelszó sikeresen frissítve.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'A jelszó frissítése nem sikerült, próbáld újra.');
+        }
     }
 }

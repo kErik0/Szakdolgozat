@@ -36,20 +36,12 @@ class AuthenticatedSessionController extends Controller
             }
 
             $user = Auth::guard('company')->user();
-            if (!$user->hasVerifiedEmail()) {
-                Auth::guard('company')->logout();
-                return redirect()->route('verification.notice');
-            }
 
             $request->session()->regenerate();
             return redirect()->route('jobs.browse');
         } else {
             if (Auth::guard('web')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
                 $user = Auth::guard('web')->user();
-                if (!$user->hasVerifiedEmail()) {
-                    Auth::guard('web')->logout();
-                    return redirect()->route('verification.notice');
-                }
 
                 $request->session()->regenerate();
 

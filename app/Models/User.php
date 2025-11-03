@@ -68,4 +68,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
        $this->notify(new UserVerifyEmail());
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($user) {
+            // Jelentkezések törlése a felhasználó törlésekor
+            if ($user->applications()->exists()) {
+                $user->applications()->delete();
+            }
+        });
+    }
 }
