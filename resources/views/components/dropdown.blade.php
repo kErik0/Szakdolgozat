@@ -1,39 +1,71 @@
-@props(['align' => 'right', 'width' => '36', 'contentClasses' => 'py-1 bg-white dark:bg-gray-700'])
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'bg-[#3c3e43] text-white text-left'])
 
 @php
-$alignmentClasses = match ($align) {
-    'left' => 'ltr:origin-top-left rtl:origin-top-right start-0',
-    'top' => 'origin-top',
-    default => 'ltr:origin-top-right rtl:origin-top-left end-0',
-};
+    switch ($align) {
+        case 'left':
+            $alignmentClasses = 'origin-top-left start-0';
+            break;
+        case 'top':
+            $alignmentClasses = 'origin-top';
+            break;
+        default:
+            $alignmentClasses = 'origin-top-right end-0';
+            break;
+    }
 
-$width = match ($width) {
-    '32' => 'w-32',
-    '35' => 'w-35',
-    '40' => 'w-40',
-    '44' => 'w-44',
-    '48' => 'w-48',
-    default => $width,
-};
+    $width = match ($width) {
+        '48' => 'w-auto min-w-[10rem]',
+        default => 'w-auto min-w-[10rem]',
+    };
 @endphp
 
-<div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
-    <div @click="open = ! open">
-        {{ $trigger }}
-    </div>
+<div class="relative">
+    <div x-data="{ open: false }" @click.away="open = false" class="relative">
+        <div @click="open = !open">
+            <div class="dropdown-trigger rounded-md transition-colors duration-150 cursor-pointer">
+                {{ $trigger }}
+            </div>
+        </div>
 
-    <div x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
+        <div
+            x-show="open"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95"
+            x-transition:enter-end="transform opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg end-0"
-            style="display: none; right: 0;"
-            @click="open = false">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 dropdown-menu {{ $contentClasses }}">
-            {{ $content }}
+            x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95"
+            class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }}"
+            style="display: none;"
+        >
+            <div class="rounded-md overflow-hidden shadow-lg border border-[#6b6d72] dark:border-[#71747b] {{ $contentClasses }}">
+                <div class="flex flex-col">
+                    {{ $content }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+{{-- Globális dropdown link stílus --}}
+@once
+    <style>
+        .dropdown-menu a {
+            display: block;
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            text-align: left;
+            color: #ffffff;
+            background-color: #3c3e43;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .dropdown-menu a:hover {
+            background-color: #4b4d52;
+            color: #fff;
+        }
+        .dropdown-trigger:hover {
+            background-color: #4b4d52;
+            transition: background-color 0.2s ease;
+        }
+    </style>
+@endonce

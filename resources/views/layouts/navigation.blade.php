@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <div class="nav-right">
+    <div class="nav-right flex items-center gap-2">
         <button aria-label="Toggle dark mode" id="theme-toggle">
             <!-- Nap ikon (világos mód) -->
             <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke="white">
@@ -44,7 +44,7 @@
         @if($user)
             <x-dropdown align="right" width="48">
                 <x-slot name="trigger">
-                    <button class="flex items-center justify-start gap-1 pl-2 pr-3 py-2 rounded text-white hover:bg-[#4b4d52] focus:outline-none focus:ring-0 transition" style="min-width: 120px;">
+                    <button class="flex items-center justify-start gap-1 pl-2 pr-3 py-2 rounded-md text-white bg-transparent hover:bg-[#4b4d52] hover:border hover:border-[#6b6d72] focus:outline-none focus:ring-0 transition-all duration-150" style="min-width: 120px;">
                         <div class="whitespace-nowrap overflow-hidden text-ellipsis text-left">{{ $user->name }}</div>
                     </button>
                 </x-slot>

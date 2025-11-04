@@ -30,53 +30,55 @@
      style="display:@if(request()->filled('location') || request()->filled('type') || request()->filled('min_salary') || request()->filled('max_salary')) block @else none @endif;">
 
     <form method="GET" action="{{ route('jobs.browse') }}">
-        <div class="flex flex-wrap gap-3 items-center justify-center mb-4">
-            <input type="text" name="location" value="{{ request('location') }}" placeholder="Helyszín" class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400" />
+        <div class="flex flex-wrap items-end justify-center gap-4 mb-6">
 
-            <select name="type" class="input w-44">
-                <option value="">Típus</option>
-                <option value="Teljes munkaidő" {{ request('type') == 'Teljes munkaidő' ? 'selected' : '' }}>Teljes munkaidő</option>
-                <option value="Rész munkaidő" {{ request('type') == 'Rész munkaidő' ? 'selected' : '' }}>Rész munkaidő</option>
-                <option value="Gyakornok" {{ request('type') == 'Gyakornok' ? 'selected' : '' }}>Gyakornok</option>
-                <option value="Hibrid" {{ request('type') == 'Hibrid' ? 'selected' : '' }}>Hibrid</option>
-            </select>
+            {{-- Helyszín --}}
+            <div class="flex flex-col">
+                <input type="text" name="location" value="{{ request('location') }}" placeholder="Helyszín" 
+                       class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
+            </div>
 
-            <div class="flex flex-col items-center gap-3 w-full">
-                <label for="min_salary" class="text-gray-700 dark:text-gray-200">
-                    Min fizetés:
-                </label>
-                <div class="flex items-center gap-3">
-                    <input type="range" id="min_salary" name="min_salary"
+            {{-- Típus --}}
+            <div class="flex flex-col">
+                <select name="type" class="input w-44" >
+                    <option value="" disabled selected>Típus</option>
+                    <option value="Teljes munkaidő" {{ request('type') == 'Teljes munkaidő' ? 'selected' : '' }}>Teljes munkaidő</option>
+                    <option value="Rész munkaidő" {{ request('type') == 'Rész munkaidő' ? 'selected' : '' }}>Rész munkaidő</option>
+                    <option value="Gyakornok" {{ request('type') == 'Gyakornok' ? 'selected' : '' }}>Gyakornok</option>
+                    <option value="Hibrid" {{ request('type') == 'Hibrid' ? 'selected' : '' }}>Hibrid</option>
+                </select>
+            </div>
+
+            {{-- Min fizetés --}}
+            <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                    <input type="number" id="min_salary_input" name="min_salary"
                            min="0" max="2000000" step="10000"
                            value="{{ request('min_salary', 0) }}"
-                           class="w-56 accent-gray-900 dark:accent-gray-100">
-                    <input type="number" id="min_salary_input"
-                           min="0" max="2000000" step="10000"
-                           value="{{ request('min_salary', 0) }}"
-                           class="input w-24 text-center">
-                    <span class="text-gray-700 dark:text-gray-200">Ft</span>
+                           placeholder="Min fizetés"
+                           class="input w-28 text-center">
+                    <span class="text-gray-700 dark:text-gray-200 text-sm">Ft</span>
                 </div>
             </div>
 
-            <div class="flex flex-col items-center gap-3 w-full">
-                <label for="max_salary" class="text-gray-700 dark:text-gray-200">
-                    Max fizetés:
-                </label>
-                <div class="flex items-center gap-3">
-                    <input type="range" id="max_salary" name="max_salary"
+            {{-- Max fizetés --}}
+            <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                    <input type="number" id="max_salary_input" name="max_salary"
                            min="0" max="2000000" step="10000"
                            value="{{ request('max_salary', 2000000) }}"
-                           class="w-56 accent-gray-900 dark:accent-gray-100">
-                    <input type="number" id="max_salary_input"
-                           min="0" max="2000000" step="10000"
-                           value="{{ request('max_salary', 2000000) }}"
-                           class="input w-24 text-center">
-                    <span class="text-gray-700 dark:text-gray-200">Ft</span>
+                           placeholder="Max fizetés"
+                           class="input w-28 text-center">
+                    <span class="text-gray-700 dark:text-gray-200 text-sm">Ft</span>
                 </div>
             </div>
 
-            <button type="submit" class="btn">Szűrés</button>
-            <a href="{{ route('jobs.browse') }}" class="btn">Törlés</a>
+            {{-- Gombok --}}
+            <div class="flex gap-2">
+                <button type="submit" class="btn">Szűrés</button>
+                <a href="{{ route('jobs.browse') }}" class="btn">Törlés</a>
+            </div>
+
         </div>
     </form>
 </div>

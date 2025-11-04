@@ -64,7 +64,7 @@ class ApplicationController extends Controller
             }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'A jelentkezést elfogadtad');
     }
 
     /**
@@ -82,7 +82,7 @@ class ApplicationController extends Controller
             }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('error', 'A jelentkezést elutasítottad');
     }
 
     /**
@@ -121,7 +121,7 @@ class ApplicationController extends Controller
 
             $application->delete();
 
-            return redirect()->back()->with('success', 'A jelentkezés sikeresen törölve lett.');
+            return redirect()->back()->with('success', 'A jelentkezést törölted');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Hiba történt a törlés közben. Kérjük, próbáld újra.');
         }

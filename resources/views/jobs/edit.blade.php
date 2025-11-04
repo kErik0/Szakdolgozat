@@ -24,7 +24,7 @@
                 <label for="title" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Cím</label>
                 <input id="title" name="title" type="text" value="{{ old('title', $job->title) }}" required autofocus
                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                              bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
+                              text-gray-800 dark:text-gray-100 
                               placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                               focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('title')" />
@@ -34,7 +34,7 @@
                 <label for="description" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Leírás</label>
                 <textarea id="description" name="description" rows="5" required
                           class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                                 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
+                                 text-gray-800 dark:text-gray-100 
                                  placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                                  focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition">{{ old('description', $job->description) }}</textarea>
                 <x-input-error :messages="$errors->get('description')" />
@@ -44,7 +44,7 @@
                 <label for="location" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Hely</label>
                 <input id="location" name="location" type="text" value="{{ old('location', $job->location) }}" required
                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                              bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
+                              text-gray-800 dark:text-gray-100 
                               placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                               focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('location')" />
@@ -54,7 +54,7 @@
                 <label for="salary" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Bérezés</label>
                 <input id="salary" name="salary" type="text" value="{{ old('salary', $job->salary) }}" required
                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                              bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
+                              text-gray-800 dark:text-gray-100 
                               placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                               focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('salary')" />
@@ -64,7 +64,7 @@
                 <label for="type" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Típus</label>
                 <select id="type" name="type" required
                         class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                               bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
+                               text-gray-800 dark:text-gray-100 
                                placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                                focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition">
                     <option value="">Válassz típust</option>
@@ -77,10 +77,10 @@
             </div>
 
             <div class="flex justify-center gap-4 mt-6">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 w-28 text-sm text-center rounded-md shadow transition">
-                    Frissítés
+                <button type="submit" class="btn w-24 text-center">
+                    Mentés
                 </button>
-                <a href="{{ route('jobs.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 w-28 text-sm text-center rounded-md shadow transition">
+                <a href="{{ route('jobs.index') }}" class="btn w-24 text-center">
                     Mégse
                 </a>
             </div>

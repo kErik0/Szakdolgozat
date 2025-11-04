@@ -60,7 +60,7 @@
                         @csrf
                         @method('PATCH')
                         <textarea name="description" rows="5" class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 
-                            bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 
+                            text-gray-800 dark:text-gray-100 placeholder-gray-500 
                             dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition">{{ old('description', $user->description) }}</textarea>
                         <label for="website" class="block mb-2 text-gray-700 dark:text-gray-300 font-medium">Cég weboldala</label>
                         <input type="url" name="website" id="website" value="{{ old('website', $user->website) }}" 

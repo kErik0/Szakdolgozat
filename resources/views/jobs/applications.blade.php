@@ -22,9 +22,8 @@
       ⚠️ {{ session('error') }}
     </div>
   @endif
-
   <div class="min-h-screen">
-    <div class="max-w-6xl mx-auto px-6">
+    <div class="max-w-6xl mx-auto px-6 mt-8">
       <h1 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-gray-100">Jelentkezők</h1>
 
       @if($applications->count() > 0)
@@ -72,22 +71,18 @@
                       @csrf
                       <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm shadow transition">Elutasít</button>
                     </form>
-                  @else
-                    <span class="text-sm text-gray-600 dark:text-gray-300">
-                      @if($application->status === 'accepted') ✅ Elfogadva 
-                      @elseif($application->status === 'rejected') ❌ Elutasítva 
-                      @endif
-                    </span>
                   @endif
                 </div>
 
-                <form action="{{ route('applications.destroyCompany', $application->id) }}" method="POST" class="mt-3">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm shadow transition">
-                    Törlés
-                  </button>
-                </form>
+                @if($application->status === 'accepted' || $application->status === 'rejected')
+                  <form action="{{ route('applications.destroyCompany', $application->id) }}" method="POST" class="mt-3">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm shadow transition">
+                      Törlés
+                    </button>
+                  </form>
+                @endif
               </div>
             </div>
           @endforeach

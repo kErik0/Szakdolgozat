@@ -63,18 +63,30 @@
 
         {{-- Jelentkezés gomb --}}
         <div class="mt-8 text-center">
-            @if($alreadyApplied ?? false)
-                <span class="inline-block px-6 py-2 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 font-medium">
-                    Jelentkezett
-                </span>
+            @auth('company')
+                @if(auth('company')->user()->id === $job->company_id)
+                    <a href="{{ route('jobs.edit', $job->id) }}" class="btn">
+                        Szerkesztés
+                    </a>
+                @else
+                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-5 py-2 rounded-md shadow text-center">
+                        Cégként nem tudsz jelentkezni állásra.
+                    </div>
+                @endif
             @else
-                <form action="{{ route('jobs.apply', $job) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn">
-                        Jelentkezés
-                    </button>
-                </form>
-            @endif
+                @if($alreadyApplied ?? false)
+                    <span class="inline-block px-6 py-2 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 font-medium">
+                        Jelentkezett
+                    </span>
+                @else
+                    <form action="{{ route('jobs.apply', $job) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn">
+                            Jelentkezés
+                        </button>
+                    </form>
+                @endif
+            @endauth
         </div>
     </div>
 </x-app-layout>
