@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <!-- Értesítések -->
     @if (session('success'))
@@ -34,7 +33,7 @@
 
             <!-- Name -->
             <div>
-                <label for="name" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Név</label>
+                <label for="name" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Név / Cég név</label>
                 <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus autocomplete="name"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('name')" />
@@ -48,12 +47,26 @@
                 <x-input-error :messages="$errors->get('email')" />
             </div>
 
+            <!-- Phone -->
+            <div>
+                <label for="phone" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Telefonszám</label>
+                <input id="phone" name="phone" type="tel" pattern="^\+?[0-9]+$" value="{{ old('phone') }}" minlength="8" maxlength="15" required autocomplete="tel" style="background-clip: padding-box;"
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
+                <x-input-error :messages="$errors->get('phone')" />
+            </div>
+
             <!-- Password -->
             <div>
                 <label for="password" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó</label>
                 <input id="password" name="password" type="password" required autocomplete="new-password"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('password')" />
+                <x-input-error :messages="$errors->get('password_confirmation')" />
+                <ul class="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <li>• Minimum 8 karakter</li>
+                    <li>• Legalább egy kisbetű</li>
+                    <li>• Legalább egy nagybetű</li>
+                </ul>
             </div>
 
             <!-- Confirm Password -->
@@ -61,7 +74,6 @@
                 <label for="password_confirmation" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó megerősítése</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
-                <x-input-error :messages="$errors->get('password_confirmation')" />
             </div>
 
             <!-- Regisztráció típusa -->

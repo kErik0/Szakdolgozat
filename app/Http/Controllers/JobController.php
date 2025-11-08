@@ -34,14 +34,16 @@ class JobController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'location' => 'required|string|max:255',
-            'salary' => 'nullable|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'title'        => 'required|string|max:255',
+            'position'     => 'required|string|max:255',
+            'description'  => 'required|string',
+            'location'     => 'required|string|max:255',
+            'salary'       => 'nullable|string|max:255',
+            'salary_type'  => 'required|in:fix,órabér',
+            'type'         => 'nullable|string|max:255',
         ]);
         $company = Auth::guard('company')->user();
-        $company->jobs()->create($request->all());
+        $company->jobs()->create($request->only(['title','position','description','location','salary','salary_type','type']));
         return redirect()->route('jobs.index')->with('success', 'Álláshirdetés létrehozva!');
     }
 
@@ -56,13 +58,15 @@ class JobController extends Controller
     {
         $this->authorize('update', $job);
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'location' => 'required|string|max:255',
-            'salary' => 'nullable|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'title'        => 'required|string|max:255',
+            'position'     => 'required|string|max:255',
+            'description'  => 'required|string',
+            'location'     => 'required|string|max:255',
+            'salary'       => 'nullable|string|max:255',
+            'salary_type'  => 'required|in:fix,órabér',
+            'type'         => 'nullable|string|max:255',
         ]);
-        $job->update($request->all());
+        $job->update($request->only(['title','position','description','location','salary','salary_type','type']));
         return redirect()->route('jobs.index')->with('success', 'Álláshirdetés frissítve!');
     }
 

@@ -53,6 +53,11 @@
                 <input id="password" name="password" type="password" required autocomplete="new-password"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <ul class="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <li>• Minimum 8 karakter</li>
+                    <li>• Legalább egy kisbetű</li>
+                    <li>• Legalább egy nagybetű</li>
+                </ul>
             </div>
 
             <!-- Jelszó megerősítése -->

@@ -11,10 +11,12 @@ class CompanyController extends Controller
     {
         $request->validate([
             'description' => 'nullable|string|max:1000',
+            'website' => 'nullable|string|max:255',
         ]);
 
         $company = auth('company')->user();
         $company->description = $request->description;
+        $company->website = $request->website;
         $company->save();
 
         return redirect()->route('profile.edit')->with('success', 'A cég leírása sikeresen frissítve.');

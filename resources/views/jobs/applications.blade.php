@@ -60,7 +60,7 @@
                 </div>
               </div>
 
-              <div class="flex flex-col items-center gap-3 mt-4">
+              <div class="flex flex-col items-center gap-2 mt-2">
                 <div class="flex justify-center gap-3">
                   @if($application->status === 'pending')
                     <form action="{{ route('applications.accept', $application->id) }}" method="POST">
@@ -74,15 +74,33 @@
                   @endif
                 </div>
 
-                @if($application->status === 'accepted' || $application->status === 'rejected')
-                  <form action="{{ route('applications.destroyCompany', $application->id) }}" method="POST" class="mt-3">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm shadow transition">
-                      Törlés
-                    </button>
-                  </form>
-                @endif
+                <div class="flex justify-center gap-3">
+                  @if($application->status === 'accepted')
+                    <form action="{{ route('applications.reject', $application->id) }}" method="POST">
+                      @csrf
+                      <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm shadow transition">
+                        Elutasít
+                      </button>
+                    </form>
+                  @elseif($application->status === 'rejected')
+                    <form action="{{ route('applications.accept', $application->id) }}" method="POST">
+                      @csrf
+                      <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm shadow transition">
+                        Elfogad
+                      </button>
+                    </form>
+                  @endif
+
+                  @if($application->status !== 'pending')
+                    <form action="{{ route('applications.destroyCompany', $application->id) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm shadow transition">
+                        Törlés
+                      </button>
+                    </form>
+                  @endif
+                </div>
               </div>
             </div>
           @endforeach

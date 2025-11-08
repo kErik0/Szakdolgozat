@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
+use App\Models\Company;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,30 +29,54 @@ class AuthenticatedSessionController extends Controller
         $role = $request->input('role');
 
         if ($role === 'company') {
-            $loginSuccess = Auth::guard('company')->attempt($request->only('email', 'password'), $request->filled('remember'));
+            // Email létezés ellenőrzése (company)
+            $companyExists = Company::where('email', $request->email)->exists();
 
-            if (!$loginSuccess) {
+            if (! $companyExists) {
                 return back()->withErrors([
-                    'email' => 'Hibás e-mail cím vagy jelszó.',
-                ]);
+                    'email' => 'Még nincs ilyen céges fiók.',
+                ])->withInput();
             }
 
-            $user = Auth::guard('company')->user();
+            // Jelszó ellenőrzése
+            $loginSuccess = Auth::guard('company')->attempt(
+                $request->only('email', 'password'),
+                $request->filled('remember')
+            );
+
+            if (! $loginSuccess) {
+                return back()->withErrors([
+                    'password' => 'Hibás jelszó.',
+                ])->withInput();
+            }
 
             $request->session()->regenerate();
             return redirect()->route('jobs.browse');
+
         } else {
-            if (Auth::guard('web')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
-                $user = Auth::guard('web')->user();
+            // Email létezés ellenőrzése (user)
+            $userExists = User::where('email', $request->email)->exists();
 
-                $request->session()->regenerate();
-
-                return redirect()->route('jobs.browse');
-            } else {
+            if (! $userExists) {
                 return back()->withErrors([
-                    'email' => 'Hibás e-mail cím vagy jelszó.',
-                ]);
+                    'email' => 'Még nincs ilyen felhasználói fiók.',
+                ])->withInput();
             }
+
+            // Jelszó ellenőrzése
+            $loginSuccess = Auth::guard('web')->attempt(
+                $request->only('email', 'password'),
+                $request->filled('remember')
+            );
+
+            if (! $loginSuccess) {
+                return back()->withErrors([
+                    'password' => 'Hibás jelszó.',
+                ])->withInput();
+            }
+
+            $request->session()->regenerate();
+            return redirect()->route('jobs.browse');
         }
     }
 

@@ -97,9 +97,13 @@
                                 @endif
 
                                 <h3 class="text-lg font-semibold text-center mb-2 text-gray-900 dark:text-gray-100">{{ $job->title }}</h3>
+                                <p class="text-center text-gray-500 dark:text-gray-400 text-sm mb-1">{{ $job->position }}</p>
                                 <p class="text-center text-gray-600 dark:text-gray-300">{{ $job->location }}</p>
                                 <p class="text-center text-gray-600 dark:text-gray-300">{{ $job->type }}</p>
-                                <p class="text-center text-gray-800 dark:text-gray-200 font-medium mt-2">{{ number_format($job->salary, 0, ',', ' ') }} Ft</p>
+                                <p class="text-center text-gray-800 dark:text-gray-200 font-medium mt-2">
+                                    {{ number_format($job->salary, 0, ',', ' ') }} Ft / 
+                                    {{ $job->salary_type === 'órabér' ? 'óra' : 'hó' }}
+                                </p>
 
                                 <div class="text-center mt-4">
                                     <a href="{{ route('jobs.show', $job->id) }}" 

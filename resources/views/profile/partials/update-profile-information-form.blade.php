@@ -48,34 +48,42 @@
                     @endif
                 </div>
 
+                <!-- USER phone field -->
+                @if(!($user instanceof \App\Models\Company))
+                    <div>
+                        <label for="phone" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Telefonszám</label>
+                        <input id="phone" name="phone" type="tel" pattern="^\+?[0-9]+$" value="{{ old('phone', $user->phone) }}" minlength="8" maxlength="15" autocomplete="off" style="background-clip: padding-box;"
+                            class="w-1/2 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
+                        <x-input-error :messages="$errors->get('phone')" />
+                    </div>
+                @endif
+
                 @if($user instanceof \App\Models\Company)
                     <div>
                         <label for="address" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Cím</label>
-                        <input id="address" name="address" type="text" value="{{ old('address', $user->address) }}" minlength="5" maxlength="255" autocomplete="off" style="background-clip: padding-box;"
+                        <input id="address" name="address" type="text" value="{{ old('address', $user->address) }}" maxlength="255" autocomplete="off" style="background-clip: padding-box;"
                             class="w-1/2 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
-                        <x-input-error :messages="$errors->userUpdate->get('address')" />
+                        <x-input-error :messages="$errors->get('address')" />
                     </div>
 
                     <div>
                         <label for="tax_number" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Adószám</label>
-                        <input id="tax_number" name="tax_number" type="text" value="{{ old('tax_number', $user->tax_number) }}" minlength="8" maxlength="50" autocomplete="off" style="background-clip: padding-box;"
+                        <input id="tax_number" name="tax_number" type="text" value="{{ old('tax_number', $user->tax_number) }}" maxlength="50" autocomplete="off" style="background-clip: padding-box;"
                             class="w-1/2 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
-                        <x-input-error :messages="$errors->userUpdate->get('tax_number')" />
+                        <x-input-error :messages="$errors->get('tax_number')" />
                     </div>
 
                     <div>
                         <label for="phone" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Telefonszám</label>
                         <input id="phone" name="phone" type="tel" pattern="^\+?[0-9]+$" value="{{ old('phone', $user->phone) }}" minlength="8" maxlength="15" autocomplete="off" style="background-clip: padding-box;"
                             class="w-1/2 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
-                        <x-input-error :messages="$errors->userUpdate->get('phone')" />
+                        <x-input-error :messages="$errors->get('phone')" />
                     </div>
                 @endif
 
-                <div class="flex items-center gap-4 pt-2">
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 w-24 text-sm text-center rounded-md shadow transition">
-                        Mentés
-                    </button>
-                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 w-24 text-sm text-center rounded-md shadow transition">
+                    Mentés
+                </button>
             </div>
         </form>
     </section>

@@ -24,7 +24,7 @@
 
                     {{-- Cég adatok --}}
                     <p class="text-center text-gray-600 dark:text-gray-300">📍 {{ $company->address ?? 'Nincs megadva' }}</p>
-                    <p class="text-center text-gray-600 dark:text-gray-300">💼 {{ $company->tax_number ?? 'Nincs megadva' }}</p>
+                    <p class="text-center text-gray-600 dark:text-gray-300">📧 {{ $company->email ?? 'Nincs megadva' }}</p>
                     <p class="text-center text-gray-600 dark:text-gray-300">📞 {{ $company->phone ?? 'Nincs megadva' }}</p>
 
                     {{-- Részletek gomb --}}

@@ -9,9 +9,11 @@ class Job extends Model
     protected $fillable = [
         'company_id',
         'title',
+        'position',
         'description',
         'location',
         'salary',
+        'salary_type',
         'type',
     ];
 

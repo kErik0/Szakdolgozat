@@ -32,17 +32,35 @@ class RegisteredUserController extends Controller
     {
         $role = $request->input('role');
 
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . ($role === 'company' ? Company::class : User::class)],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:user,company'],
-        ]);
+        try {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . ($role === 'company' ? Company::class : User::class)],
+                'phone' => ['required', 'string', 'max:20', 'regex:/^\+?[0-9]{8,15}$/'],
+                'password' => [
+                    'required',
+                    'confirmed',
+                    Rules\Password::min(8)->mixedCase(),
+                ],
+                'role' => ['required', 'string', 'in:user,company'],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->validator->errors();
+
+            // Move confirmation mismatch to password_confirmation
+            if ($errors->has('password') && str_contains($errors->first('password'), 'egyezik')) {
+                $errors->add('password_confirmation', $errors->first('password'));
+                $errors->forget('password');
+            }
+
+            throw $e;
+        }
 
         if ($role === 'company') {
             $company = Company::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]);
 
@@ -50,11 +68,13 @@ class RegisteredUserController extends Controller
 
             Auth::guard('company')->login($company);
 
-            return redirect(route('jobs.browse', absolute: false));
+            return redirect(route('jobs.browse', absolute: false))
+                ->with('success', 'Sikeresen regisztráltál!');
         } else {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'role' => $role,
             ]);
@@ -63,7 +83,8 @@ class RegisteredUserController extends Controller
 
             Auth::login($user);
 
-            return redirect(route('jobs.browse', absolute: false));
+            return redirect(route('jobs.browse', absolute: false))
+                ->with('success', 'Sikeresen regisztráltál!');
         }
     }
 }

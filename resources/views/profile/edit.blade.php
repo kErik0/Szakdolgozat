@@ -144,7 +144,7 @@
                                       bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 
                                       placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none 
                                       focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition" />
-                        <x-input-error :messages="$errors->get('password')" />
+                        <x-input-error :messages="$errors->userDeletion->get('password')" />
                     </div>
                     <div class="flex items-center gap-4 pt-2">
                         <button type="submit" 

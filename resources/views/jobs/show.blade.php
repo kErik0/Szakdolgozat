@@ -45,7 +45,11 @@
             {{-- Jobb oldal: állásadatok --}}
             <div class="space-y-3">
                 <h1 class="text-2xl font-bold">{{ $job->title }}</h1>
-                <p><strong>Fizetés:</strong> {{ number_format($job->salary, 0, ',', ' ') }} Ft</p>
+                <p>
+                    <strong>Fizetés:</strong>
+                    {{ number_format($job->salary, 0, ',', ' ') }} Ft /
+                    {{ $job->salary_type === 'órabér' ? 'óra' : 'hó' }}
+                </p>
                 <p><strong>Helyszín:</strong> {{ $job->location ?? 'Nincs megadva' }}</p>
                 <p><strong>Típus:</strong> {{ $job->type ?? 'Nincs megadva' }}</p>
             </div>

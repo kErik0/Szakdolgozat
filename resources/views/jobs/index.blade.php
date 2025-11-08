@@ -33,7 +33,11 @@
                         <div class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm transition-transform transform hover:scale-105 hover:shadow-lg duration-300">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ $job->title }}</h2>
                             <p class="text-gray-700 dark:text-gray-300"><strong>Hely:</strong> {{ $job->location }}</p>
-                            <p class="text-gray-700 dark:text-gray-300"><strong>Bérezés:</strong> {{ number_format($job->salary, 0, ',', ' ') }} Ft</p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                <strong>Bérezés:</strong>
+                                {{ number_format($job->salary, 0, ',', ' ') }} Ft /
+                                {{ $job->salary_type === 'órabér' ? 'óra' : 'hó' }}
+                            </p>
                             
                             <div class="flex flex-col gap-2 mt-4">
                                 <form action="{{ route('jobs.applications', $job->id) }}" method="GET">

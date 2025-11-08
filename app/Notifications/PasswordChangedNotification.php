@@ -21,6 +21,7 @@ class PasswordChangedNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+                    ->from(config('mail.from.address'), config('mail.from.name'))
                     ->greeting('Kedves ' . $notifiable->name . '!')
                     ->subject('Jelszóváltoztatás értesítés')
                     ->line('A jelszavad sikeresen megváltozott a portálon.')

@@ -7,6 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
+use App\Models\User;
+use App\Models\Company;
 
 class PasswordResetLinkController extends Controller
 {
@@ -29,16 +31,20 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $email = $request->email;
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if (User::where('email', $email)->exists()) {
+            $status = Password::broker('users')->sendResetLink(['email' => $email]);
+        } elseif (Company::where('email', $email)->exists()) {
+            $status = Password::broker('companies')->sendResetLink(['email' => $email]);
+        } else {
+            return back()->withInput($request->only('email'))
+                ->withErrors(['email' => 'Nincs ilyen felhasználói vagy céges fiók.']);
+        }
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withInput($request->only('email'))
+                ->withErrors(['email' => __($status)]);
     }
 }

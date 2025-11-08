@@ -31,11 +31,13 @@ class ProfileUpdateRequest extends FormRequest
                 'sometimes',
                 'required',
                 'string',
-                'lowercase',
                 'email',
                 'max:255',
                 $uniqueRule,
             ],
+            'address' => ['sometimes', 'required', 'string', 'max:255'],
+            'tax_number' => ['sometimes', 'required', 'string', 'max:50'],
+            'phone' => ['sometimes', 'required', 'string', 'max:50'],
             'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ];
     }

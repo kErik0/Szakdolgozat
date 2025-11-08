@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -16,7 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
+        $user = Auth::guard('company')->user() ?: Auth::guard('web')->user();
         return view('profile.edit', ['user' => $user]);
     }
 
@@ -25,48 +26,51 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
+        $user = Auth::guard('company')->user() ?: Auth::guard('web')->user();
 
         if ($user instanceof \App\Models\Company) {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'address' => 'required|string|max:255',
-                'tax_number' => 'required|string|max:50',
+                'email' => 'required|email|max:255|unique:companies,email,' . $user->id,
+                'address' => 'nullable|string|max:255',
+                'tax_number' => 'nullable|string|max:50',
                 'phone' => 'required|string|max:50',
             ]);
-            $user->fill($request->only(['name','email','address','tax_number','phone']));
+            $data = $request->only(['name','email','address','tax_number','phone']);
+            $data['address'] = ($data['address'] === '') ? null : $data['address'];
+            $data['tax_number'] = ($data['tax_number'] === '') ? null : $data['tax_number'];
+            $user->fill($data);
         } else {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'phone' => 'required|string|max:50|regex:/^\+?[0-9]{8,15}$/',
             ]);
-            $user->fill($request->only(['name','email']));
+            $user->fill($request->only(['name','email','phone']));
         }
 
         $passwordChanged = false;
-        $profileChanged = $user->isDirty();
 
         if ($request->has('update_password') && $request->filled('password')) {
-            $user->password = $request->password;
+            $user->password = Hash::make($request->password);
             $passwordChanged = true;
         }
 
-        if ($passwordChanged && $profileChanged) {
-            $user->save();
+        // Profiladatok mentése
+        $user->save();
+
+        // Jelszóváltozás kezelése
+        if ($passwordChanged) {
+            $user = $user instanceof \App\Models\Company
+                ? \App\Models\Company::find($user->id)
+                : \App\Models\User::find($user->id);
+
             $user->notify(new \App\Notifications\PasswordChangedNotification());
-            return Redirect::route('profile.edit')->with('status', 'profile-and-password-updated');
-        } elseif ($passwordChanged) {
-            $user->save();
-            $user->notify(new \App\Notifications\PasswordChangedNotification());
+
             return Redirect::route('profile.edit')->with('status', 'password-updated');
-        } elseif ($profileChanged) {
-            $user->save();
-            return Redirect::route('profile.edit')->with('success', 'Profil sikeresen frissítve.');
-        } else {
-            // Nincs változás, ne írjuk felül a státuszt
-            return Redirect::route('profile.edit')->with('error', 'Nem történt módosítás a profilban.');
         }
+
+        return Redirect::route('profile.edit')->with('success', 'Profil sikeresen frissítve.');
     }
 
     public function uploadProfilePicture(Request $request)
@@ -139,10 +143,16 @@ class ProfileController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+            'password' => ['required'],
         ]);
 
         $user = Auth::guard('web')->user() ?? Auth::guard('company')->user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return Redirect::back()->withErrors([
+                'password' => 'A megadott jelszó hibás.',
+            ], 'userDeletion');
+        }
 
         try {
             // Jelentkezések törlése
