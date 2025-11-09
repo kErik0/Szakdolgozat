@@ -51,7 +51,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             $request->session()->regenerate();
-            return redirect()->route('jobs.browse');
+            return redirect()->route('home');
 
         } else {
             // Email létezés ellenőrzése (user)
@@ -76,7 +76,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             $request->session()->regenerate();
-            return redirect()->route('jobs.browse');
+            return redirect()->route('home');
         }
     }
 

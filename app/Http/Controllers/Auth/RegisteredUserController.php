@@ -68,7 +68,7 @@ class RegisteredUserController extends Controller
 
             Auth::guard('company')->login($company);
 
-            return redirect(route('jobs.browse', absolute: false))
+            return redirect(route('home', absolute: false))
                 ->with('success', 'Sikeresen regisztráltál!');
         } else {
             $user = User::create([
@@ -83,7 +83,7 @@ class RegisteredUserController extends Controller
 
             Auth::login($user);
 
-            return redirect(route('jobs.browse', absolute: false))
+            return redirect(route('home', absolute: false))
                 ->with('success', 'Sikeresen regisztráltál!');
         }
     }

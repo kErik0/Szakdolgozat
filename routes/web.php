@@ -18,7 +18,12 @@ use App\Http\Controllers\Auth\PasswordController;
 
 
 
-Route::get('/', [JobController::class, 'browse'])->name('jobs.browse');
+
+Route::get('/', function () {
+    return view('index');
+})->name('home');
+
+Route::get('/browse', [JobController::class, 'browse'])->name('jobs.browse');
 
 // Admin route külön URL-lel
 Route::get('/admin', function () {

@@ -21,12 +21,14 @@
     gap: 16px;
 }
 
+
 /* Közép: keresés + szűrő */
 .navbar .nav-center {
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
 
 /* Jobb oldal: módváltó és hamburger */
 .navbar .nav-right {
@@ -35,6 +37,7 @@
     gap: 16px;
     white-space: nowrap !important;
 }
+
 
 .navbar .nav-right {
     justify-content: flex-end;
@@ -295,4 +298,150 @@ html.dark #moon-icon {
 .dropdown-trigger {
     margin-left: 2px; /* finom távolság az ikon és a név között */
     margin-right: 25px; /* balra tolás */
+}
+.navbar-trigger {
+    /* placeholder for possible future styles */
+}
+
+/* =============================== */
+/* MOBIL NAVBAR BEÁLLÍTÁSOK       */
+/* max 1024px alatt                */
+/* =============================== */
+
+@media (max-width: 1024px) {
+
+    /* NAVBAR alap méret mobilon */
+    .navbar {
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
+    /* BAL oldalon: Főoldal + Cégek marad */
+    .navbar .nav-left {
+        display: flex !important;
+        gap: 12px;
+    }
+
+    /* KÖZÉP: Kereső mező + Szűrők gomb ELTŰNIK */
+    .navbar .nav-center {
+        display: none !important;
+    }
+
+    /* JOBB oldal: módváltó + hamburger marad,
+       DE a nagyító ikon csak mobilon jelenik meg */
+    #mobile-search-btn {
+        display: flex !important;
+    }
+
+    /* Minden más desktop ikon, ami zavarhat → eltűnik */
+    .navbar .nav-right .search-desktop {
+        display: none !important;
+    }
+
+    /* JOBB oldal spacing mobilon kisebb */
+    .navbar .nav-right {
+        gap: 10px;
+    }
+
+    /* Felhasználói dropdown mobilon NE legyen kint a navbarban */
+    .navbar .dropdown-trigger {
+        display: none !important;
+    }
+
+    /* Mobil dropdown legyen ugyanolyan, mint desktop */
+    .dropdown-menu {
+        max-width: 200px !important;
+        min-width: max-content !important;
+        padding: 10px 0 !important;
+        border-radius: 6px !important;
+        background-color: #3c3e43 !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    .dropdown-menu a,
+    .dropdown-menu button {
+        padding: 8px 36px 8px 12px !important;
+        text-align: right !important;
+    }
+}
+
+/* =============================== */
+/* DESKTOP – min 1024px            */
+/* =============================== */
+
+@media (min-width: 1024px) {
+
+    /* Mobilos nagyító ikon desktopon ELTŰNIK */
+    #mobile-search-btn {
+        display: none !important;
+    }
+
+    /* Desktopon visszajön a kereső mező + szűrők */
+    .navbar .nav-center {
+        display: flex !important;
+    }
+
+    /* Dropdown ismét látszik */
+    .navbar .dropdown-trigger {
+        display: flex !important;
+    }
+
+    /* Hamburger ikon desktopon ne jelenjen meg */
+    #mobile-menu-toggle {
+        display: none !important;
+    }
+
+    /* Mobil gombok desktop nézetben ne látszódjanak */
+    #mobile-search-btn,
+    #mobile-menu-toggle {
+        display: none !important;
+    }
+}
+/* ========================================= */
+/* Mobil search + hamburger ikon fix         */
+/* Módváltóval megegyező háttér és hover     */
+/* ========================================= */
+
+#mobile-search-btn,
+#mobile-menu-toggle {
+    background-color: transparent !important;
+    border-radius: 6px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.2s ease-in-out !important;
+}
+
+#mobile-search-btn:hover,
+#mobile-menu-toggle:hover {
+    background-color: #4b4d52 !important;
+}
+
+/* Ikonméret igazítása – legyen olyan, mint a színváltó */
+#mobile-search-btn svg,
+#mobile-menu-toggle svg {
+    width: 22px !important;
+    height: 22px !important;
+    transition: transform 0.15s ease-in-out !important;
+}
+
+/* Hoverkor enyhe nagyítás, mint a theme-toggle gombnál */
+#mobile-search-btn:hover svg,
+#mobile-menu-toggle:hover svg {
+    transform: scale(1.05);
+}
+
+/* Biztos ami biztos: minden mobil ikon eltűnik desktopon */
+@media (min-width: 1024px) {
+    #mobile-search-btn,
+    #mobile-menu-toggle {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 }
