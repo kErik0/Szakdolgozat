@@ -19,9 +19,9 @@ use App\Http\Controllers\Auth\PasswordController;
 
 
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+use App\Http\Controllers\HomeController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/browse', [JobController::class, 'browse'])->name('jobs.browse');
 

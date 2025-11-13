@@ -38,6 +38,12 @@
                        class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
             </div>
 
+            {{-- Pozíció --}}
+            <div class="flex flex-col">
+                <input type="text" name="position" value="{{ request('position') }}" placeholder="Pozíció"
+                       class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
+            </div>
+
             {{-- Típus --}}
             <div class="flex flex-col">
                 <select name="type" class="input w-44" >

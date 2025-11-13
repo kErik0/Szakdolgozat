@@ -50,6 +50,7 @@
                     {{ number_format($job->salary, 0, ',', ' ') }} Ft /
                     {{ $job->salary_type === 'órabér' ? 'óra' : 'hó' }}
                 </p>
+                <p><strong>Pozíció:</strong> {{ $job->position ?? 'Nincs megadva' }}</p>
                 <p><strong>Helyszín:</strong> {{ $job->location ?? 'Nincs megadva' }}</p>
                 <p><strong>Típus:</strong> {{ $job->type ?? 'Nincs megadva' }}</p>
             </div>

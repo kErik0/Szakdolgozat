@@ -12,6 +12,8 @@ use App\Notifications\NewApplicationNotification;
 use App\Notifications\ApplicationAcceptNotification;
 use App\Notifications\ApplicationRejectNotification;
 use App\Notifications\ApplicationSubmitNotification;
+use App\Models\JobView;
+use App\Models\Category;
 
 class JobController extends Controller
 {
@@ -28,7 +30,8 @@ class JobController extends Controller
     // Cégek: hirdetés létrehozása
     public function create()
     {
-        return view('jobs.create');
+        $categories = Category::all();
+        return view('jobs.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -36,6 +39,7 @@ class JobController extends Controller
         $request->validate([
             'title'        => 'required|string|max:255',
             'position'     => 'required|string|max:255',
+            'category_id'  => 'required|exists:categories,id',
             'description'  => 'required|string',
             'location'     => 'required|string|max:255',
             'salary'       => 'nullable|string|max:255',
@@ -43,7 +47,7 @@ class JobController extends Controller
             'type'         => 'nullable|string|max:255',
         ]);
         $company = Auth::guard('company')->user();
-        $company->jobs()->create($request->only(['title','position','description','location','salary','salary_type','type']));
+        $company->jobs()->create($request->only(['title','position','description','location','salary','salary_type','type','category_id']));
         return redirect()->route('jobs.index')->with('success', 'Álláshirdetés létrehozva!');
     }
 
@@ -51,7 +55,8 @@ class JobController extends Controller
     public function edit(Job $job)
     {
         $this->authorize('update', $job);
-        return view('jobs.edit', compact('job'));
+        $categories = Category::all();
+        return view('jobs.edit', compact('job','categories'));
     }
 
     public function update(Request $request, Job $job)
@@ -60,13 +65,14 @@ class JobController extends Controller
         $request->validate([
             'title'        => 'required|string|max:255',
             'position'     => 'required|string|max:255',
+            'category_id'  => 'required|exists:categories,id',
             'description'  => 'required|string',
             'location'     => 'required|string|max:255',
             'salary'       => 'nullable|string|max:255',
             'salary_type'  => 'required|in:fix,órabér',
             'type'         => 'nullable|string|max:255',
         ]);
-        $job->update($request->only(['title','position','description','location','salary','salary_type','type']));
+        $job->update($request->only(['title','position','description','location','salary','salary_type','type','category_id']));
         return redirect()->route('jobs.index')->with('success', 'Álláshirdetés frissítve!');
     }
 
@@ -148,6 +154,22 @@ class JobController extends Controller
         if (Auth::guard('web')->check()) {
             $user = Auth::guard('web')->user();
             $alreadyApplied = $job->applications()->where('user_id', $user->id)->exists();
+
+            // Bejelentkezett felhasználó esetén elmentjük az adatbázisba
+            JobView::firstOrCreate([
+                'user_id' => Auth::guard('web')->id(),
+                'job_id' => $job->id,
+            ]);
+        } else {
+            // Vendég esetén cookie-ban tároljuk a megtekintett állásokat (7 napig)
+            $viewedJobs = json_decode(request()->cookie('viewed_jobs', '[]'), true);
+
+            if (!in_array($job->id, $viewedJobs)) {
+                $viewedJobs[] = $job->id;
+            }
+
+            // 7 napig érvényes cookie
+            cookie()->queue('viewed_jobs', json_encode($viewedJobs), 60 * 24 * 7);
         }
 
         return view('jobs.show', compact('job', 'alreadyApplied'));
@@ -160,11 +182,21 @@ class JobController extends Controller
 
 
         $query = Job::query()->with('company');
+        // Kategória szerinti szűrés
+        if ($request->filled('category')) {
+            $slug = $request->category;
+            $category = \App\Models\Category::where('slug', $slug)->first();
+
+            if ($category) {
+                $query->where('category_id', $category->id);
+            }
+        }
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
                 ->orWhere('description', 'LIKE', "%{$search}%")
+                ->orWhere('position', 'LIKE', "%{$search}%")
                 ->orWhere('location', 'LIKE', "%{$search}%")
                 ->orWhereHas('company', function ($sub) use ($search) {
                 $sub->where('name', 'LIKE', "%{$search}%");
@@ -179,6 +211,10 @@ class JobController extends Controller
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
+        }
+
+        if ($request->filled('position')) {
+            $query->where('position', $request->position);
         }
 
         if ($request->filled('min_salary')) {
