@@ -21,6 +21,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     </head>
 
 <body class="bg-[#f9f9f7] dark:bg-[#1f1f1f] text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
