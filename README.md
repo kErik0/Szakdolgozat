@@ -47,3 +47,8 @@ A projekt elérhető itt: http://127.0.0.1:8000
 ```bash
 npm run dev
 ```
+## 7+1. 
+Képek megjelenítése (Storage Link) Laravelnél gyakori, hogy a feltöltött képek nem jelennek meg azonnal. Ha a "Backend telepítése" után nem látszanak a képek/ikonok, akkor futtatni kell még ezt az egy parancsot: 
+```bash
+php artisan storage:link
+```
