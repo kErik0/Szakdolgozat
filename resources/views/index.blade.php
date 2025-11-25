@@ -22,7 +22,6 @@
                     ⚠️ {{ session('error') }}
                 </div>
             @endif
-    <!-- Hero banner képpel -->
     <section class="relative text-white py-20 rounded-2xl shadow-md text-center overflow-hidden">
         <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=2000&q=80" 
              alt="Office teamwork" 
@@ -39,8 +38,6 @@
             </a>
         </div>
     </section>
-
-    <!-- Kategóriák teljes hátteres kártyákkal -->
     <section class="max-w-6xl mx-auto mt-16 text-center">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-8">Kategóriák</h2>
 
@@ -94,8 +91,6 @@
             </a>
         </div>
     </section>
-
-    <!-- Kiemelt cégek képekkel -->
     <section class="max-w-6xl mx-auto mt-20 text-center">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-8">🏢 Kiemelt partnereink</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
@@ -109,12 +104,7 @@
                 </a>
             @endforeach
         </div>
-    </section>
-
-       <!-- Munkamenet üzenetek -->
-            
-
-    <!-- Fő csempe konténer -->
+    </section>            
     <div class="max-w-7xl mx-auto mt-16 bg-white dark:bg-[#2b2b2b] rounded-xl shadow-sm p-10">
 
         @guest

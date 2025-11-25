@@ -1,5 +1,4 @@
 <x-app-layout>
-    <!-- Értesítések -->
     @if (session('success'))
         <div 
             x-data="{ show: true }" 
@@ -24,14 +23,12 @@
         </div>
     @endif
 
-    <!-- Regisztráció form -->
     <div class="flex justify-center items-center min-h-[80vh]">
         <form method="POST" action="{{ route('register') }}" class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md space-y-6">
             @csrf
 
             <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6 tracking-wide">Regisztráció</h2>
 
-            <!-- Name -->
             <div>
                 <label for="name" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Név / Cég név</label>
                 <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus autocomplete="name"
@@ -39,7 +36,6 @@
                 <x-input-error :messages="$errors->get('name')" />
             </div>
 
-            <!-- Email Address -->
             <div>
                 <label for="email" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Email cím</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username"
@@ -47,7 +43,6 @@
                 <x-input-error :messages="$errors->get('email')" />
             </div>
 
-            <!-- Phone -->
             <div>
                 <label for="phone" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Telefonszám</label>
                 <input id="phone" name="phone" type="tel" pattern="^\+?[0-9]+$" value="{{ old('phone') }}" minlength="8" maxlength="15" required autocomplete="tel" style="background-clip: padding-box;"
@@ -55,7 +50,6 @@
                 <x-input-error :messages="$errors->get('phone')" />
             </div>
 
-            <!-- Password -->
             <div>
                 <label for="password" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó</label>
                 <input id="password" name="password" type="password" required autocomplete="new-password"
@@ -69,14 +63,12 @@
                 </ul>
             </div>
 
-            <!-- Confirm Password -->
             <div>
                 <label for="password_confirmation" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó megerősítése</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
             </div>
 
-            <!-- Regisztráció típusa -->
             <div class="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-[#3a3a3a] p-3 rounded-md border border-gray-300 dark:border-gray-600 mt-3">
                 <span class="block text-sm mb-2 font-medium">Regisztráció típusa</span>
                 <div class="flex justify-center gap-6">
@@ -94,7 +86,6 @@
                 <x-input-error :messages="$errors->get('role')" />
             </div>
 
-            <!-- Link és gomb -->
             <div class="flex flex-col items-center space-y-3 mt-4">
                 <a href="{{ route('login') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:underline">
                     Már regisztráltál?

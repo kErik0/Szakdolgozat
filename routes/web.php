@@ -25,7 +25,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/browse', [JobController::class, 'browse'])->name('jobs.browse');
 
-// Admin route külön URL-lel
 Route::get('/admin', function () {
     $user = Auth::user();
 
@@ -85,14 +84,10 @@ Route::middleware(['auth:company'])->group(function() {
     Route::get('/jobs/{job}/applications', [JobController::class, 'applications'])->name('jobs.applications');
     Route::post('/applications/{application}/accept', [ApplicationController::class, 'accept'])->name('applications.accept');
     Route::post('/applications/{application}/reject', [ApplicationController::class, 'reject'])->name('applications.reject');
-    // Cégek törölhetik a jelentkezéseket
-    Route::delete('/company/applications/{id}', [ApplicationController::class, 'destroyCompany'])
-        ->middleware(['auth:company'])
-        ->name('applications.destroyCompany');
+    Route::delete('/company/applications/{id}', [ApplicationController::class, 'destroyCompany'])->middleware(['auth:company'])->name('applications.destroyCompany');
     Route::patch('/company/update-description', [CompanyController::class, 'updateDescription'])->name('company.updateDescription');
 });
 
-// Felhasználók (álláskeresők)
 Route::get('/all-jobs', function () {
     $user = Auth::user();
     $jobs = Job::all();
@@ -100,17 +95,12 @@ Route::get('/all-jobs', function () {
     return view('dashboard-user', compact('user', 'jobs', 'appliedJobs'));
 })->middleware(['auth:web'])->name('jobs.list');
 
-// Jelentkezés egy állásra (vendégek is láthatják, de csak bejelentkezve tudnak jelentkezni)
 Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
 
-// Saját jelentkezések megtekintése (csak bejelentkezett felhasználóknak)
 Route::middleware(['auth:web'])->group(function() {
     Route::get('/my-applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::delete('/my-applications/{id}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
-    // Felhasználók törölhetik a saját jelentkezéseiket
-    Route::delete('/my-applications/{id}', [ApplicationController::class, 'destroyUser'])
-        ->middleware(['auth:web'])
-        ->name('applications.destroyUser');
+    Route::delete('/my-applications/{id}', [ApplicationController::class, 'destroyUser'])->middleware(['auth:web'])->name('applications.destroyUser');
 });
 
 Route::prefix('company')->name('company.')->group(function () {

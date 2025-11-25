@@ -1,5 +1,4 @@
 <x-app-layout>
-    <!-- Értesítések -->
     @if (session('success'))
         <div 
             x-data="{ show: true }" 
@@ -23,8 +22,6 @@
             ⚠️ {{ session('error') }}
         </div>
     @endif
-
-    <!-- Elfelejtett jelszó form -->
     <div class="flex justify-center items-center min-h-[80vh]">
         <form method="POST" action="{{ route('password.email') }}" class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md space-y-6">
             @csrf
@@ -35,7 +32,6 @@
                 Add meg az email címed, és küldünk egy linket, amivel új jelszót választhatsz.
             </p>
 
-            <!-- Email cím -->
             <div>
                 <label for="email" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Email cím</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
@@ -43,7 +39,6 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            <!-- Küldés gomb -->
             <div class="flex flex-col items-center space-y-3 mt-4">
                 <button type="submit" class="bg-[#1f1f1f] dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-gray-700 text-white px-3 py-1 rounded-lg w-28 shadow transition">
                     Küldés

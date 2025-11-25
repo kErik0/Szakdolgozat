@@ -1,6 +1,4 @@
 <x-app-layout>
-            
-            <!-- Munkamenet üzenetek -->
             @if (session('success'))
                 <div 
                     x-data="{ show: true }" 
@@ -25,26 +23,18 @@
                 </div>
             @endif
 
-<!-- Szűrődoboz: csak akkor látható, ha a navbarból megnyitod -->
 <div id="filters-box"
      style="display:@if(request()->filled('location') || request()->filled('type') || request()->filled('min_salary') || request()->filled('max_salary')) block @else none @endif;">
-
     <form method="GET" action="{{ route('jobs.browse') }}">
         <div class="flex flex-wrap items-end justify-center gap-4 mb-6">
-
-            {{-- Helyszín --}}
             <div class="flex flex-col">
                 <input type="text" name="location" value="{{ request('location') }}" placeholder="Helyszín" 
                        class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
             </div>
-
-            {{-- Pozíció --}}
             <div class="flex flex-col">
                 <input type="text" name="position" value="{{ request('position') }}" placeholder="Pozíció"
                        class="input w-44 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
             </div>
-
-            {{-- Típus --}}
             <div class="flex flex-col">
                 <select name="type" class="input w-44" >
                     <option value="" disabled selected>Típus</option>
@@ -54,8 +44,6 @@
                     <option value="Hibrid" {{ request('type') == 'Hibrid' ? 'selected' : '' }}>Hibrid</option>
                 </select>
             </div>
-
-            {{-- Min fizetés --}}
             <div class="flex flex-col">
                 <div class="flex items-center gap-2">
                     <input type="number" id="min_salary_input" name="min_salary"
@@ -66,8 +54,6 @@
                     <span class="text-gray-700 dark:text-gray-200 text-sm">Ft</span>
                 </div>
             </div>
-
-            {{-- Max fizetés --}}
             <div class="flex flex-col">
                 <div class="flex items-center gap-2">
                     <input type="number" id="max_salary_input" name="max_salary"
@@ -78,8 +64,6 @@
                     <span class="text-gray-700 dark:text-gray-200 text-sm">Ft</span>
                 </div>
             </div>
-
-            {{-- Gombok --}}
             <div class="flex gap-2">
                 <button type="submit" class="btn">Szűrés</button>
                 <a href="{{ route('jobs.browse') }}" class="btn">Törlés</a>
@@ -88,8 +72,6 @@
         </div>
     </form>
 </div>
-
-            <!-- Állások -->
                 @if(isset($jobs) && count($jobs) > 0)
                     <div class="job-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1rem; margin-top: 1rem;">
                         @foreach($jobs as $job)

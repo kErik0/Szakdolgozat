@@ -24,7 +24,6 @@
             @endif
     <div class="max-w-4xl mx-auto mt-12 mb-20 text-text-light dark:text-text-dark">
         <div class="grid md:grid-cols-2 gap-8 items-center text-left">
-            {{-- Bal oldal: cégadatok --}}
             <div class="space-y-4 text-center md:text-left">
                 @if($job->company && $job->company->logo && file_exists(public_path($job->company->logo)))
                     <img src="{{ asset($job->company->logo) }}" alt="{{ $job->company->name }}" class="w-24 h-24 mx-auto md:mx-0 rounded-full object-cover">
@@ -41,8 +40,6 @@
                     <p class="text-gray-600 dark:text-gray-400">{{ $job->company->phone ?? 'Telefon nincs megadva' }}</p>
                 </div>
             </div>
-
-            {{-- Jobb oldal: állásadatok --}}
             <div class="space-y-3">
                 <h1 class="text-2xl font-bold">{{ $job->title }}</h1>
                 <p>
@@ -55,8 +52,6 @@
                 <p><strong>Típus:</strong> {{ $job->type ?? 'Nincs megadva' }}</p>
             </div>
         </div>
-
-        {{-- Leírás --}}
         @if(!empty($job->description))
             <div class="mt-10">
                 <h2 class="text-xl font-semibold mb-2">Leírás</h2>
@@ -65,8 +60,6 @@
                 </p>
             </div>
         @endif
-
-        {{-- Jelentkezés gomb --}}
         <div class="mt-8 text-center">
             @auth('company')
                 @if(auth('company')->user()->id === $job->company_id)

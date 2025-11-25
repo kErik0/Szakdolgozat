@@ -8,12 +8,10 @@
         <a href="{{ route('jobs.browse') }}" class="{{ request()->routeIs('jobs.browse') ? 'active' : '' }}">
             Állások
         </a>
-
         <a href="{{ route('dashboard-company') }}" class="{{ request()->routeIs('dashboard-company') ? 'active' : '' }}">
             Cégek
         </a>
     </div>
-
     @if (request()->routeIs('jobs.browse') || request()->routeIs('dashboard-company'))
         <div class="nav-center search-desktop flex items-center gap-2">
             <form method="GET" action="{{ request()->routeIs('dashboard-company') ? route('dashboard-company') : route('jobs.browse') }}">
@@ -25,13 +23,11 @@
                     class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#3c3e43] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition"
                 >
             </form>
-
             @if(request()->routeIs('jobs.browse'))
                 <button type="button" id="toggle-filters" class="btn">Szűrők</button>
             @endif
         </div>
     @endif
-
     <div class="nav-right flex items-center gap-2">
         @if (request()->routeIs('jobs.browse') || request()->routeIs('dashboard-company'))
         <button id="mobile-search-btn" class="md:hidden lg:hidden block w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#4b4d52] transition">
@@ -46,13 +42,10 @@
         </button>
         @endif
         <button aria-label="Toggle dark mode" id="theme-toggle">
-            <!-- Nap ikon (világos mód) -->
             <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke="white">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 2v2m0 16v2m8-10h2M2 12H4m15.364-7.364l1.414 1.414M4.222 19.778l1.414-1.414M19.778 19.778l-1.414-1.414M4.222 4.222l1.414 1.414M12 6a6 6 0 100 12A6 6 0 0012 6z" />
             </svg>
-
-            <!-- Hold ikon (sötét mód) -->
             <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke="white" style="opacity: 0;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
@@ -63,7 +56,6 @@
                 <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
             </svg>
         </button>
-
         @if($user)
             <x-dropdown align="right" width="48">
                 <x-slot name="trigger">
@@ -81,7 +73,6 @@
                         </svg>
                     </button>
                 </x-slot>
-
                 <x-slot name="content">
                     <x-dropdown-link :href="route('profile.edit')">{{ __('Profil') }}</x-dropdown-link>
                     @if($user->role === 'company')
@@ -113,18 +104,15 @@
     <div class="rounded-md overflow-hidden shadow-lg border border-[#6b6d72] dark:border-[#71747b] bg-[#3c3e43] text-white flex flex-col p-0">
         @if($user)
             <a href="{{ route('profile.edit') }}" class="block py-2 px-4 text-left hover:bg-[#4b4d52] transition">Profil</a>
-
             @if($user->role === 'company')
                 <a href="{{ route('jobs.index') }}" class="block py-2 px-4 text-left hover:bg-[#4b4d52] transition">Saját hirdetéseim</a>
                 <a href="{{ route('jobs.create') }}" class="block py-2 px-4 text-left hover:bg-[#4b4d52] transition">Új álláshirdetés</a>
             @elseif($user->role === 'user')
                 <a href="{{ url('/my-applications') }}" class="block py-2 px-4 text-left hover:bg-[#4b4d52] transition">Saját jelentkezéseim</a>
             @endif
-
             <form id="mobile-logout-form" method="POST" action="{{ $user->role === 'company' ? route('company.logout') : route('logout') }}" class="hidden">
                 @csrf
             </form>
-
             <a href="#"
                onclick="event.preventDefault(); document.getElementById('mobile-logout-form').submit();"
                class="block w-full text-left py-2 px-4 hover:bg-[#4b4d52] transition text-white">
@@ -170,13 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
-
-    // Alapértelmezett állapot beállítása
     const isDark = document.documentElement.classList.contains('dark');
     sunIcon.style.opacity = isDark ? '0' : '1';
     moonIcon.style.opacity = isDark ? '1' : '0';
 
-    // Fix méret és pozíció, ne mozduljon el
     Object.assign(themeToggle.style, {
         width: '40px',
         height: '40px',
@@ -185,8 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
         justifyContent: 'center',
         transition: 'none'
     });
-
-    // Kattintás esemény
     themeToggle.addEventListener('click', () => {
         const darkMode = document.documentElement.classList.toggle('dark');
         localStorage.setItem('theme', darkMode ? 'dark' : 'light');
@@ -227,24 +210,16 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileMenuToggle?.addEventListener('click', () => {
         mobileMenu.classList.toggle('hidden');
     });
-
-    // Ha átméretezed az ablakot desktopról mobilra, minden dropdown és mobilmenü záródjon be
     window.addEventListener('resize', () => {
         if (window.innerWidth < 1024) {
-
-            // Desktop dropdownok bezárása (kattintással, ami Alpine-nak is jó)
             document.querySelectorAll('.dropdown-trigger').forEach(btn => {
                 const parent = btn.closest('[x-data]');
                 if (parent && parent.__x && parent.__x.$data.open) {
                     btn.click();
                 }
             });
-
-            // Mobil menü bezárása
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenu) mobileMenu.classList.add('hidden');
-
-            // Mobil kereső overlay bezárása
             const mobileSearchOverlay = document.getElementById('mobile-search-overlay');
             if (mobileSearchOverlay) {
                 mobileSearchOverlay.classList.add('hidden');

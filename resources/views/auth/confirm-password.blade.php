@@ -1,6 +1,5 @@
 
 <x-app-layout>
-    <!-- Értesítések -->
     @if (session('success'))
         <div 
             x-data="{ show: true }" 
@@ -34,16 +33,12 @@
             <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
                 Ez az alkalmazás biztonságos területe. Kérjük, erősítsd meg a jelszavad a folytatás előtt.
             </p>
-
-            <!-- Jelszó -->
             <div>
                 <label for="password" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó</label>
                 <input id="password" name="password" type="password" required autocomplete="current-password"
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#2f3035] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-0 focus:border-gray-500 transition" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
-
-            <!-- Gomb -->
             <div class="flex justify-center mt-4">
                 <button type="submit" class="bg-[#1f1f1f] dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-gray-700 text-white px-6 py-2 rounded-lg w-40 shadow transition">
                     Megerősítés

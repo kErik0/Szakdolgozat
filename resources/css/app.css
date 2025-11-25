@@ -16,7 +16,6 @@ a.btn {
 
 
 @layer base {
-  /* Minden inputtípusra érvényes háttér és színbeállítás */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -55,15 +54,15 @@ nav[role="navigation"] .relative.inline-flex.items-center {
 /* Aktív (aktuális oldal) */
 nav[role="navigation"] span[aria-current="page"],
 nav[role="navigation"] a[aria-current="page"] {
-    background-color: #e5e7eb !important; /* világos mód: világos szürke */
-    color: #111827 !important; /* sötét szöveg */
+    background-color: #e5e7eb !important; 
+    color: #111827 !important; 
 }
 
 @media (prefers-color-scheme: dark) {
     nav[role="navigation"] span[aria-current="page"],
     nav[role="navigation"] a[aria-current="page"] {
-        background-color: #4b5563 !important; /* sötét mód: világosabb szürke */
-        color: #f3f4f6 !important; /* világos szöveg */
+        background-color: #4b5563 !important; 
+        color: #f3f4f6 !important; 
     }
 }
 

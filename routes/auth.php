@@ -54,14 +54,11 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    // Logout route handling both 'web' and 'company' guards explicitly
     Route::post('logout', function (Request $request) {
-        // Logout normal user guard 'web'
         if (Auth::guard('web')->check()) {
             Auth::guard('web')->logout();
         }
 
-        // Logout company user guard 'company'
         if (Auth::guard('company')->check()) {
             Auth::guard('company')->logout();
         }
@@ -69,7 +66,6 @@ Route::middleware('auth')->group(function () {
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to homepage after logout
         return redirect('/');
     })->name('logout');
 });

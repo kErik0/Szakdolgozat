@@ -1,6 +1,5 @@
 
 <x-app-layout>
-    <!-- Értesítések -->
     @if (session('success'))
         <div 
             x-data="{ show: true }" 
@@ -25,12 +24,10 @@
         </div>
     @endif
 
-    <!-- Jelszó visszaállítás form -->
     <div class="flex justify-center items-center min-h-[80vh]">
         <form method="POST" action="{{ route('password.store') }}" class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md space-y-6">
             @csrf
 
-            <!-- Token -->
             <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
             <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6 tracking-wide">Új jelszó beállítása</h2>
@@ -39,7 +36,6 @@
                 Add meg az email címed és az új jelszavad az alábbi mezőkben.
             </p>
 
-            <!-- Email cím -->
             <div>
                 <label for="email" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Email cím</label>
                 <input id="email" name="email" type="email" value="{{ old('email', $request->email) }}" required autofocus
@@ -47,7 +43,6 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            <!-- Új jelszó -->
             <div>
                 <label for="password" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Új jelszó</label>
                 <input id="password" name="password" type="password" required autocomplete="new-password"
@@ -60,7 +55,6 @@
                 </ul>
             </div>
 
-            <!-- Jelszó megerősítése -->
             <div>
                 <label for="password_confirmation" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó megerősítése</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
@@ -68,7 +62,6 @@
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             </div>
 
-            <!-- Gomb -->
             <div class="flex flex-col items-center space-y-3 mt-4">
                 <button type="submit" class="bg-[#1f1f1f] dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-gray-700 text-white px-3 py-1 rounded-lg w-28 shadow transition">
                     Mentés

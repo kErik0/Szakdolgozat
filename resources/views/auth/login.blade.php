@@ -1,5 +1,4 @@
 <x-app-layout>
-    <!-- Értesítések -->
     @if (session('success'))
         <div 
             x-data="{ show: true }" 
@@ -24,14 +23,12 @@
         </div>
     @endif
 
-    <!-- Bejelentkezés form -->
     <div class="flex justify-center items-center min-h-[80vh]">
         <form method="POST" action="{{ route('login') }}" class="bg-white dark:bg-[#2b2b2b] border border-gray-200 dark:border-gray-700 p-8 rounded-xl shadow-sm w-full max-w-md space-y-6">
             @csrf
 
             <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6 tracking-wide">Bejelentkezés</h2>
 
-            <!-- Email Address -->
             <div>
                 <label for="email" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Email cím</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username"
@@ -39,7 +36,6 @@
                 <x-input-error :messages="$errors->get('email')" />
             </div>
 
-            <!-- Password -->
             <div>
                 <label for="password" class="block mb-1 text-gray-700 dark:text-gray-300 font-medium">Jelszó</label>
                 <input id="password" name="password" type="password" required autocomplete="current-password"
@@ -47,7 +43,6 @@
                 <x-input-error :messages="$errors->get('password')" />
             </div>
 
-            <!-- Bejelentkezés típusa -->
             <div class="text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-[#3a3a3a] p-3 rounded-md border border-gray-300 dark:border-gray-600 mt-3">
                 <span class="block text-sm mb-2 font-medium">Bejelentkezés típusa</span>
                 <div class="flex justify-center gap-6">
@@ -65,14 +60,12 @@
                 <x-input-error :messages="$errors->get('role')" />
             </div>
 
-            <!-- Remember Me -->
             <div class="flex items-center justify-start gap-2 text-gray-700 dark:text-gray-300 mt-2">
                 <input id="remember_me" type="checkbox" name="remember"
                     class="appearance-none w-4 h-4 border border-gray-500 dark:border-gray-400 rounded-sm bg-white dark:bg-[#2f3035] checked:bg-gray-500 checked:dark:bg-gray-400 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:outline-none transition">
                 <label for="remember_me">{{ __('Emlékezz rám') }}</label>
             </div>
 
-            <!-- Jelszó emlékeztető és gomb -->
             <div class="flex flex-col items-center space-y-3 mt-4">
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:underline">
